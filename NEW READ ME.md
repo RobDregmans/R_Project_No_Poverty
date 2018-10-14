@@ -1,11 +1,13 @@
 Research question 1: What indicators strongly relate to the goal of no poverty and what is the trend within those indicators?
 
 Research question 2: to what extend have individual countries reached the no poverty goals?
+
 *Subquestion could be*
 - What is causing that certain countries climb up from poverty? (which policies did help)
 - What is causing that certain countries are still stuck in poverty? (maybe visualise conflicts or other causes)
 
 Research question 3: What is the future trend or certain countries regarding their poverty goals
+
 *Subquestion could be*
 - Are the 2030 poverty goals achieveable in 2030?
 
