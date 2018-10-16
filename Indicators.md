@@ -7,6 +7,10 @@ More specific to regions within a country:
 - Rural poverty headcount ratio at national poverty lines (% of rural population)
 - Urban poverty headcount ratio at national poverty lines (% of urban population)
 
+Indicator 1.1
+- Poverty headcount ratio at $1.90 a day (2011 PPP) (% of population)
+- Poverty gap at $1.90 a day (2011 PPP) (%)
+
 Indicator 2
 - Coverage of social insurance programs (% of population)
 - Coverage of social insurance programs in 2nd quintile (% of population)
