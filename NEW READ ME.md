@@ -12,7 +12,8 @@ RESEARCH QUESTION
 What indicators strongly relate to the goal of no poverty and what are their future trends for individual countries?
 
 subquestions:
-- What indicators strongly relate to the goal of no poverty and what is the trend within those indicators?
+- What indicators strongly relate to the goal of no poverty?
+     - How did those indicators developed in the last decades (for individual countries)?
 - To what extend have individual countries reached the no poverty goals?
      - What is causing that certain countries climb up from poverty? (which policies did help)
      - What is causing that certain countries are still stuck in poverty? (maybe visualise conflicts or other causes)
