@@ -42,6 +42,16 @@ Indicator 5
 http://datatopics.worldbank.org/sdgs/
 This site is used to derive these indicators
 
+indicator 6
+- Income share held by fourth 20%
+- Income share held by highest 10%
+- Income share held by highest 20%
+- Income share held by lowest 10%
+- Income share held by lowest 20%
+- Income share held by second 20%
+- Income share held by third 20%
+
+
 http://www.worldbank.org/en/news/press-release/2017/05/26/china-launches-new-poverty-reduction-case-database
 New Poverty Reduction Case Database
 
