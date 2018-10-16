@@ -59,15 +59,22 @@ indicator 6
 http://www.worldbank.org/en/news/press-release/2017/05/26/china-launches-new-poverty-reduction-case-database
 New Poverty Reduction Case Database
 
-Indicator 7
+
+Indicator 7 (about economy)
 - GNI (current US$)
 - Merchandise exports (current US$)
 - Merchandise exports by the reporting economy (current US$)
 - Merchandise imports (current US$)
 - Merchandise imports by the reporting economy (current US$)
-- Inflation, consumer prices
+- Inflation, consumer prices (annual %)
+- Inflation, GDP deflator (annual %)
+- Inflation, GDP deflator: linked series (annual %)
 
-
-Indicator 8
-- number of infant deaths
-- survival to age 65
+Indicator 8 (about life span)
+- Completeness of infant death reporting (% of reported infant deaths to estimated infant deaths)
+- Number of infant deaths
+- Mortality rate, infant (per 1,000 live births)
+- Mortality rate, infant, female (per 1,000 live births)
+- Mortality rate, infant, male (per 1,000 live births)
+- Survival to age 65, female (% of cohort)
+- Survival to age 65, male (% of cohort)
