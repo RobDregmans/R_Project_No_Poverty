@@ -46,14 +46,14 @@ http://www.worldbank.org/en/news/press-release/2017/05/26/china-launches-new-pov
 New Poverty Reduction Case Database
 
 Indicator 6
-GNI (current US$)
-Merchandise exports (current US$)
-Merchandise exports by the reporting economy (current US$)
-Merchandise imports (current US$)
-Merchandise imports by the reporting economy (current US$)
-Inflation, consumer prices
+- GNI (current US$)
+- Merchandise exports (current US$)
+- Merchandise exports by the reporting economy (current US$)
+- Merchandise imports (current US$)
+- Merchandise imports by the reporting economy (current US$)
+- Inflation, consumer prices
 
 
 Indicator 7
-number of infant deaths
-survival to age 65
+- number of infant deaths
+- survival to age 65
