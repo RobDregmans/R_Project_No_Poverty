@@ -17,7 +17,7 @@ subquestions:
      - What is causing that certain countries climb up from poverty? (which policies did help)
      - What is causing that certain countries are still stuck in poverty? (maybe visualise conflicts or other causes)
 - What is the future trend or certain countries regarding their poverty goals
-     - - Are the 2030 poverty goals achieveable in 2030?
+     - Are the 2030 poverty goals achieveable in 2030?
 
  Links for more info
 - general info about SDG 1: http://www.undp.org/content/undp/en/home/sustainable-development-goals/goal-1-no-poverty.html
