@@ -55,7 +55,7 @@ indicator 6
 http://www.worldbank.org/en/news/press-release/2017/05/26/china-launches-new-poverty-reduction-case-database
 New Poverty Reduction Case Database
 
-Indicator 6
+Indicator 7
 - GNI (current US$)
 - Merchandise exports (current US$)
 - Merchandise exports by the reporting economy (current US$)
@@ -64,6 +64,6 @@ Indicator 6
 - Inflation, consumer prices
 
 
-Indicator 7
+Indicator 8
 - number of infant deaths
 - survival to age 65
