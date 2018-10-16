@@ -7,20 +7,17 @@ UN 2030 TARGET GOALS
 - Ensure significant mobilization of resources from a variety of sources, including through enhanced development cooperation, in order to provide adequate and predictable means for developing countries, in particular least developed countries, to implement programmes and policies to end poverty in all its dimensions
 - Create sound policy frameworks at the national, regional and international levels, based on pro-poor and gender-sensitive development strategies, to support accelerated investment in poverty eradication actions
 
-RESEARCH QUESTIONS
+RESEARCH QUESTION
 
-Research question 1: What indicators strongly relate to the goal of no poverty and what is the trend within those indicators?
+What indicators strongly relate to the goal of no poverty and what are their future trends for individual countries?
 
-Research question 2: to what extend have individual countries reached the no poverty goals?
-
-*Subquestion could be*
-- What is causing that certain countries climb up from poverty? (which policies did help)
-- What is causing that certain countries are still stuck in poverty? (maybe visualise conflicts or other causes)
-
-Research question 3: What is the future trend or certain countries regarding their poverty goals
-
-*Subquestion could be*
-- Are the 2030 poverty goals achieveable in 2030?
+subquestions:
+- What indicators strongly relate to the goal of no poverty and what is the trend within those indicators?
+- To what extend have individual countries reached the no poverty goals?
+     - What is causing that certain countries climb up from poverty? (which policies did help)
+     - What is causing that certain countries are still stuck in poverty? (maybe visualise conflicts or other causes)
+- What is the future trend or certain countries regarding their poverty goals
+     - - Are the 2030 poverty goals achieveable in 2030?
 
  Links for more info
 - general info about SDG 1: http://www.undp.org/content/undp/en/home/sustainable-development-goals/goal-1-no-poverty.html
