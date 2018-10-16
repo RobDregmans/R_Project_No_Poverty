@@ -9,7 +9,16 @@ More specific to regions within a country:
 
 Indicator 1.1
 - Poverty headcount ratio at $1.90 a day (2011 PPP) (% of population)
+- Poverty headcount ratio at $3.20 a day (2011 PPP) (% of population)
+- Poverty headcount ratio at $5.50 a day (2011 PPP) (% of population)
 - Poverty gap at $1.90 a day (2011 PPP) (%)
+- Poverty gap at $3.20 a day (2011 PPP) (%)
+- Poverty gap at $5.50 a day (2011 PPP) (%)
+- Poverty gap at national poverty lines (%)
+- Increase in poverty gap at $1.90 ($ 2011 PPP) poverty line due to out-of-pocket health care expenditure (% of poverty line)
+- Increase in poverty gap at $3.10 ($ 2011 PPP) poverty line due to out-of-pocket health care expenditure (% of poverty line)
+- Increase in poverty gap at $1.90 ($ 2011 PPP) poverty line due to out-of-pocket health care expenditure (USD)
+- Increase in poverty gap at $3.10 ($ 2011 PPP) poverty line due to out-of-pocket health care expenditure (USD)
 
 Indicator 2
 - Coverage of social insurance programs (% of population)
