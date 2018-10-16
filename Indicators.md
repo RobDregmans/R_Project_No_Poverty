@@ -41,3 +41,19 @@ Indicator 5
 
 http://datatopics.worldbank.org/sdgs/
 This site is used to derive these indicators
+
+http://www.worldbank.org/en/news/press-release/2017/05/26/china-launches-new-poverty-reduction-case-database
+New Poverty Reduction Case Database
+
+Indicator 6
+GNI (current US$)
+Merchandise exports (current US$)
+Merchandise exports by the reporting economy (current US$)
+Merchandise imports (current US$)
+Merchandise imports by the reporting economy (current US$)
+Inflation, consumer prices
+
+
+Indicator 7
+number of infant deaths
+survival to age 65
