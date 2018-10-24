@@ -56,6 +56,7 @@ indicators_economy = list("NY.GNP.PCAP.CD","NY.GNP.MKTP.CN","FP.CPI.TOTL.ZG","NY
 indicators_life_span = list("SH.DTH.IMRT","SP.DTH.INFR.ZS","SP.DTH.INFR.ZS","SP.DYN.TO65.FE.ZS","SP.DYN.TO65.MA.ZS",
                          "SP.DYN.IMRT.IN","SP.DYN.IMRT.FE.IN","SP.DYN.IMRT.MA.IN")
 
+
 #putting all indicators names in one list to merge all lists with a loop, see below
 List_of_indicators_list = list(indicators_life_span,indicators_economy,indicators_income_share, Target_3_C_Social_Safety_Net_programm,Target_3_B_Social_Safety_Net_programm,Target_3_A_Social_insurance_programm,Target_2_National_Poverty_Lines_Indicator,Target_1_Headcount_Poverty_190_320_550,Grouping_variables_population)
 
@@ -65,12 +66,6 @@ for (i in List_of_indicators_list ) {
 }
 my_vars_c = c(my_vars)
 
-my_values = list()
-for (i in range(28)) {
-  x = (1990+i)
-  my_values = append(my_values, x)
-}
-my_values_c = c(my_values)
 
 # subset the data - selected var with all years
 country_data = subset(mydata,mydata$Country.Code %in% country_code$V1)
@@ -78,7 +73,7 @@ indicator_data = subset(country_data,country_data$Indicator.Code %in% my_vars_c)
 
 # subset the data - selected var with only 1990 - 2015 & prepare data for plotting
 indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
-sub("X", "", colnames(indicator_data_1990_2015),drop= TRUE)
+colnames(indicator_data_1990_2015) <- sub("X", "", colnames(indicator_data_1990_2015))
 
 indicator_data_melt = melt(indicator_data_1990_2015, id=c("Indicator.Code","Indicator.Name","Country.Code"))
 
