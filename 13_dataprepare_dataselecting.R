@@ -75,7 +75,7 @@ indicator_data = subset(country_data,country_data$Indicator.Code %in% my_vars_c)
 indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
 colnames(indicator_data_1990_2015) <- sub("X", "", colnames(indicator_data_1990_2015))
 
-indicator_data_melt = melt(indicator_data_1990_2015, id=c("Indicator.Code","Indicator.Name","Country.Code"))
+indicator_data_melt = melt(indicator_data_1990_2015, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
 
 combined_cast=cast(combined_melt, Country  ~ Indicator, value = 'Value')
 
