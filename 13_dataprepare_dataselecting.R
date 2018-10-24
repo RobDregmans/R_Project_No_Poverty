@@ -68,8 +68,8 @@ my_vars_c = c(my_vars)
 
 
 # subset the data - selected var with all years
-country_data = subset(mydata,mydata$Country.Code %in% country_code$V1)
-indicator_data = subset(country_data,country_data$Indicator.Code %in% my_vars_c)
+#country_data = subset(mydata,mydata$Country.Code %in% country_code$V1)
+indicator_data = subset(indicator_data,indicator_data$Indicator.Code %in% my_vars_c)
 
 # subset the data - selected var with only 1990 - 2015 & prepare data for plotting
 indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
