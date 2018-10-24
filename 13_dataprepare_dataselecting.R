@@ -3,7 +3,7 @@ library(reshape2)
 
 
 # Read the data in correctly
-mydata_utf8 = read.table("data/WDI.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
+mydata_utf8 = read.table("data/WDI/WDIData.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
 mydat_sdg = read.table("data/sdg/SDGData.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE) 
 
 # drop off the final blank column
@@ -14,7 +14,7 @@ all_code = unique(mydata[,1:2])
 all_var = unique(mydata[,3:4])
 
 # use the right countries
-country_code = read.table("data/country_code.csv",sep=",",header=FALSE)  
+#country_code = read.table("data/WDI/country_code.csv",sep=",",header=FALSE)  
 # listing all our variables and group them by UN targets or characteristics
 
 Grouping_variables_population = list("SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN")
