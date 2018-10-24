@@ -10,7 +10,7 @@ UN 2030 TARGET GOALS
 
 RESEARCH QUESTION
 
-What indicators strongly relate to the goal of no poverty and what are their future trends for individual countries?
+To what extend have individual countries reached the targets for the Goal of no poverty and what are their future trends for individual countries?
 
 subquestions:
 - What indicators strongly relate to the goal of no poverty?
