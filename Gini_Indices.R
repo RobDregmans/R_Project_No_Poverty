@@ -3,10 +3,6 @@ library(reshape2)
 
 # Read the data in correctly
 mydata = read.table("WDIData.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
-#mydat_sdg = read.table("data/sdg/SDGData.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE) 
-
-# drop off the final blank column
-#mydata = mydata_utf8[,1:62]
 
 #indicator code for gini index
 my_vars_c = c("SI.POV.GINI")
@@ -29,6 +25,11 @@ v <- idm2[,3]
 #subset with only those countries
 idm3 <- subset(idm,idm$Country.Code %in% v)
 #plot the gini idexes of those countries over time
+x <- list( title = "Years" )
+y <- list( title = "Gini Index" )
+m <- list(l=150, r=20, b=70, t=10)
 pline <- plot_ly(idm3, x = ~idm3$variable, y = ~idm3$value, color = ~idm3$Country.Code) %>%
-  add_lines(line = list(shape = "spline"))
+  add_lines(line = list(shape = "spline")) %>% layout(xaxis = x, yaxis = y, margin=m)
 pline
+
+
