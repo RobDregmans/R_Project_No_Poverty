@@ -87,7 +87,7 @@ colnames(our_indicator_data) = c("Country Code","Region","Region/Country Name","
 
 #Obtaining lists for information about regions& countries
 all_region_and_country_codes=our_indicator_data[,1:3]
-all_region_and_country_codes=unique(all_region_codes)
+all_region_and_country_codes=unique(all_region_and_country_codes)
 all_regions = subset(all_region_and_country_codes, all_region_and_country_codes$Region == "")
 all_countries = subset(all_region_and_country_codes, all_region_and_country_codes$Region != "")
 
