@@ -104,10 +104,6 @@ regions_used = regions_used[,-c(2)]
 
 #selecting individual indicators values for one year
 
-
-
-
-
 #main_idx <- match(c("Country.Code","Indicator.Code","X2013"), names(mydata))
 urban_idx <- match(c("Country.Code","Indicator.Code","X2010"), names(mydata))
 #indicator_data = indicator_data[,main_idx]
