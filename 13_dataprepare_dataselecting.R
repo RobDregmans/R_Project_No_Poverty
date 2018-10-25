@@ -85,6 +85,20 @@ colnames(country_wdi) = c("Country.Code","Region","Region/Country Name")
 our_indicator_data = merge(country_wdi,indicator_data_melt,id = "Country.Code")
 colnames(our_indicator_data) = c("Country Code","Region","Region/Country Name","Indicator Code","Indicator Name","Year","Value")
 
+#Obtaining lists for information about regions& countries
+all_region_and_country_codes=our_indicator_data[,1:3]
+all_region_and_country_codes=unique(all_region_codes)
+all_regions = subset(all_region_and_country_codes, all_region_and_country_codes$Region == "")
+all_countries = subset(all_region_and_country_codes, all_region_and_country_codes$Region != "")
+
+#did a work around because factor levels in R are stupid
+general_regions = unique(all_countries['Region'])
+region_list = c('Latin America & Caribbean','South Asia','Sub-Saharan Africa','Europe & Central Asia','Middle East & North Africa','East Asia & Pacific','North America')
+
+#Subset to extract regions
+regions_used = subset(all_regions, all_regions$'Region/Country Name' %in% region_list)
+regions_used = regions_used[,-c(2)]
+
 #bbdata <- na.omit(combined_cast) 
 
 
