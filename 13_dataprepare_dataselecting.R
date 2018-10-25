@@ -69,7 +69,7 @@ my_vars_c = c(my_vars)
 
 # subset the data - selected var with all years
 #country_data = subset(mydata,mydata$Country.Code %in% country_code$V1)
-indicator_data = subset(indicator_data,indicator_data$Indicator.Code %in% my_vars_c)
+indicator_data = subset(mydata,mydata$Indicator.Code %in% my_vars_c)
 
 # subset the data - selected var with only 1990 - 2015 & prepare data for plotting
 indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
@@ -77,7 +77,13 @@ colnames(indicator_data_1990_2015) <- sub("X", "", colnames(indicator_data_1990_
 
 indicator_data_melt = melt(indicator_data_1990_2015, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
 
-combined_cast=cast(combined_melt, Country  ~ Indicator, value = 'Value')
+#setting up indicator data with country names from python @martijn
+country_names = read.table("data/country_names.csv",sep = ",", header = TRUE)
+country_wdi = country_names[,c(1:2,5:5)]
+
+colnames(country_wdi) = c("Country.Code","Region","Region/Country Name")
+our_indicator_data = merge(country_wdi,indicator_data_melt,id = "Country.Code")
+colnames(our_indicator_data) = c("Country Code","Region","Region/Country Name","Indicator Code","Indicator Name","Year","Value")
 
 #bbdata <- na.omit(combined_cast) 
 
