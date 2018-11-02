@@ -98,31 +98,5 @@ region_list = c('Latin America & Caribbean','South Asia','Sub-Saharan Africa','E
 regions_used = subset(all_regions, all_regions$'Region/Country Name' %in% region_list)
 regions_used = regions_used[,-c(2)]
 
-#bbdata <- na.omit(combined_cast) 
 
-
-#selecting individual indicators values for one year
-
-#main_idx <- match(c("Country.Code","Indicator.Code","X2013"), names(mydata))
-#urban_idx <- match(c("Country.Code","Indicator.Code","X2010"), names(mydata))
-#indicator_data = indicator_data[,main_idx]
-
-#names(indicator_data) <- c("Country","Indicator","Value")
-
-#urban_data = subset(country_data,country_data$Indicator.Code %in% "AG.LND.TOTL.UR.K2")
-#urban_data = urban_data[,urban_idx]
-
-#names(urban_data) <- c("Country","Indicator","Value")
-#combined_data = rbind(indicator_data,urban_data)
-
-#combined_melt = melt(combined_data, id=c("Country","Indicator","Value"))
-#combined_cast=cast(combined_melt, Country  ~ Indicator, value = 'Value')
-
-#bbdata <- na.omit(combined_cast) 
-#dim(bbdata)
-#names(bbdata) <- c("country","agri_land","urban","rail","bbnd","gdp","pop")
-#row.names(bbdata) <- 1:nrow(bbdata)
-
-#plot(bbdata$gdp,bbdata$bbnd,log='xy')
-#write.csv(bbdata,"data/bbdata.csv")
 
