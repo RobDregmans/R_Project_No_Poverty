@@ -16,7 +16,7 @@ all_var = unique(mydata[,3:4])
 #country_code = read.table("data/WDI/country_code.csv",sep=",",header=FALSE)  
 # listing all our variables and group them by UN targets or characteristics
 
-Grouping_variables_population = list("SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN")
+Grouping_variables_population = list("SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN","SP.URB.TOTL.IN.ZS", "SI.POV.URHC", "SP.RUR.TOTL.ZS", "SI.POV.RUHC")
 
 Target_1_Headcount_Poverty_190_320_550 = list("SI.POV.DDAY","SI.POV.LMIC,SI.POV.UMIC","SI.POV.GAPS,SI.POV.LMIC.GP",
                                               "SI.POV.UMIC.GP")
@@ -84,7 +84,7 @@ colnames(country_wdi) = c("Country.Code","Region","Region/Country Name")
 our_indicator_data = merge(country_wdi,our_indicator_data,id = "Country.Code")
 colnames(our_indicator_data) = c("Country Code","Region","Region/Country Name","Indicator Code","Indicator Name","Year","Value")
 
-#Obtaining lists for information about regions& countries
+#Obtaining lists for information about regions & countries
 all_region_and_country_codes=our_indicator_data[,1:3]
 all_region_and_country_codes=unique(all_region_and_country_codes)
 all_regions = subset(all_region_and_country_codes, all_region_and_country_codes$Region == "")
