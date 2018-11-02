@@ -1,0 +1,61 @@
+---
+title: "R Project Report"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Report storyline
+
+#### Chapter 1
+- Problem understanding = Introduction on poverty
+- Research question formulation:
+
+Main question: 
+How did poverty develop around the world since 1990 to national and absolute dimension and how is this related to the presence of social safety programs?
+
+To answer this research, several sub questions are defined:
+
+-  Question 1: How did poverty for all develop from 1990 – 2015 for national and absolute dimensions?
+	- To national definitions  world map
+	- To UN definitions 1.90,350,5,50 -> stacked linechart 
+	- Distribution for men/women/children stacked bar chart for three groups
+- Question 2: How is wealth distributed for countries with a relatively high poverty headcount to national poverty lines.
+	- GINI index and Lorenz curve for pick five worst from national map
+- Question 3: What is the effect of social programs on the prevalence of poverty according to national poverty lines?
+	- Barchart of absolute and percentage population living under national poverty line
+	- Regression with seaborn (python example) x = poverty, y social program
+	
+#### Chapter 2
+
+- Data understanding  introduce used databases + data descriptives
+- Data preparation  how did we modify the data to properly use it 
+#### Chapter 3 modelling and graphs
+-	Define a descriptive model for the relevant data (Visual graphs)
+-	Specify a prior distribution
+-	Use Bayesian inference to discuss credibility across parameter values
+#### Chapter 4 evaluation
+- evaluation
+-	Discuss research findings to quality of the model, quality of the data. 
+-	How could the model be improved  suggest next steps
+#### Chapter 5 development
+	- Can we predict future behaviour/Guide additional policy
+	- How would we communicate our findings to decision makers? 
+
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

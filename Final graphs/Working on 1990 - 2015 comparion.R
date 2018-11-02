@@ -11,12 +11,39 @@ poverty_1.90_per_region_na = poverty_1.90_per_region %>% drop_na()
 poverty_1.90_per_region_na$`Poverty Headcount 1.90` = poverty_1.90_per_region_na$`Poverty Headcount 1.90`*10
 
 # plot the poverty headcount idexes of those countries over time
-x <- list( title = "Years" )
-y <- list( title = "Poverty Headcount" )
+xaxis <- list(title = "Year",
+              showline = TRUE,
+              showgrid = FALSE,
+              showticklabels = TRUE,
+              linecolor = 'rgb(204, 204, 204)',
+              linewidth = 2,
+              autotick = FALSE,
+              ticks = 'outside',
+              tickcolor = 'rgb(204, 204, 204)',
+              tickwidth = 2,
+              ticklen = 5,
+              tickfont = list(family = 'Arial',
+                              size = 12,
+                              color = 'rgb(82, 82, 82)'))
+
+yaxis <- list(title = "People under poverty line (millions)",
+              showgrid = TRUE,
+              zeroline = FALSE,
+              showline = TRUE,
+              showticklabels = TRUE)
+
+
 m <- list(l=150, r=20, b=70, t=10)
-pline <- plot_ly(poverty_1.90_per_region_na, x = ~poverty_1.90_per_region_na$Year, y = ~poverty_1.90_per_region_na$`Poverty Headcount 1.90`, color = ~poverty_1.90_per_region_na$`Country Code`) %>%
-  add_lines(line = list(shape = "spline"))  %>% layout(xaxis = x, yaxis = y, margin=m)
+
+
+pline <- plot_ly(poverty_1.90_per_region_na, x = ~poverty_1.90_per_region_na$Year, y = ~poverty_1.90_per_region_na$`Poverty Headcount 1.90`, color = ~poverty_1.90_per_region_na$`Country Code`, colors = "Set1") %>%
+  add_lines(line = list(shape = "markers",width = 4) )  %>% 
+  layout(title = "People living in extreme poverty per region", xaxis = xaxis, yaxis = yaxis,
+         autosize = TRUE,
+         showlegend = TRUE)
 pline
+
+
 k = as.character(regions_used[1,1])
 
 EAS = c(subset(poverty_1.90_per_region_na$`Poverty Headcount 1.90`,poverty_1.90_per_region_na$`Country Code`== (k = as.character(regions_used[1,1]))))
