@@ -16,7 +16,7 @@ all_var = unique(mydata[,3:4])
 #country_code = read.table("data/WDI/country_code.csv",sep=",",header=FALSE)  
 # listing all our variables and group them by UN targets or characteristics
 
-Grouping_variables_population = list("SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN")
+Grouping_variables_population = list("SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN","SP.URB.TOTL.IN.ZS", "SI.POV.URHC", "SP.RUR.TOTL.ZS", "SI.POV.RUHC")
 
 Target_1_Headcount_Poverty_190_320_550 = list("SI.POV.DDAY","SI.POV.LMIC,SI.POV.UMIC","SI.POV.GAPS,SI.POV.LMIC.GP",
                                               "SI.POV.UMIC.GP")
@@ -84,7 +84,7 @@ colnames(country_wdi) = c("Country.Code","Region","Region/Country Name")
 our_indicator_data = merge(country_wdi,our_indicator_data,id = "Country.Code")
 colnames(our_indicator_data) = c("Country Code","Region","Region/Country Name","Indicator Code","Indicator Name","Year","Value")
 
-#Obtaining lists for information about regions& countries
+#Obtaining lists for information about regions & countries
 all_region_and_country_codes=our_indicator_data[,1:3]
 all_region_and_country_codes=unique(all_region_and_country_codes)
 all_regions = subset(all_region_and_country_codes, all_region_and_country_codes$Region == "")
@@ -98,31 +98,5 @@ region_list = c('Latin America & Caribbean','South Asia','Sub-Saharan Africa','E
 regions_used = subset(all_regions, all_regions$'Region/Country Name' %in% region_list)
 regions_used = regions_used[,-c(2)]
 
-#bbdata <- na.omit(combined_cast) 
 
-
-#selecting individual indicators values for one year
-
-#main_idx <- match(c("Country.Code","Indicator.Code","X2013"), names(mydata))
-#urban_idx <- match(c("Country.Code","Indicator.Code","X2010"), names(mydata))
-#indicator_data = indicator_data[,main_idx]
-
-#names(indicator_data) <- c("Country","Indicator","Value")
-
-#urban_data = subset(country_data,country_data$Indicator.Code %in% "AG.LND.TOTL.UR.K2")
-#urban_data = urban_data[,urban_idx]
-
-#names(urban_data) <- c("Country","Indicator","Value")
-#combined_data = rbind(indicator_data,urban_data)
-
-#combined_melt = melt(combined_data, id=c("Country","Indicator","Value"))
-#combined_cast=cast(combined_melt, Country  ~ Indicator, value = 'Value')
-
-#bbdata <- na.omit(combined_cast) 
-#dim(bbdata)
-#names(bbdata) <- c("country","agri_land","urban","rail","bbnd","gdp","pop")
-#row.names(bbdata) <- 1:nrow(bbdata)
-
-#plot(bbdata$gdp,bbdata$bbnd,log='xy')
-#write.csv(bbdata,"data/bbdata.csv")
 
