@@ -16,7 +16,7 @@ all_var = unique(mydata[,3:4])
 #country_code = read.table("data/WDI/country_code.csv",sep=",",header=FALSE)  
 # listing all our variables and group them by UN targets or characteristics
 
-Grouping_variables_population = list("SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN","SP.URB.TOTL.IN.ZS", "SI.POV.URHC", "SP.RUR.TOTL.ZS", "SI.POV.RUHC")
+Grouping_variables_population = list("SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN","SP.URB.TOTL.IN.ZS", "SI.POV.URHC", "SP.RUR.TOTL.ZS", "SI.POV.RUHC", "SI.POV.DDAY", "SP.POP.TOTL")
 
 Target_1_Headcount_Poverty_190_320_550 = list("SI.POV.DDAY","SI.POV.LMIC,SI.POV.UMIC","SI.POV.GAPS,SI.POV.LMIC.GP",
                                               "SI.POV.UMIC.GP")
