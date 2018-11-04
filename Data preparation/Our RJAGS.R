@@ -1,58 +1,30 @@
-library(reshape)
-library(reshape2)
+#selecting data from wdi
+colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
+var_i = c("SI.POV.DDAY","SP.DYN.LE00.IN","SE.XPD.TOTL.GD.ZS")
+#subset the data with only the world and the two indicators above about population and people in poverty in %
+graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+test <- subset(graph_data, select = c("Indicator.Code","Country.Name", "Country.Code", "Year", "value"))
+df_jags = dcast(test,Country.Code + Country.Name + Year ~ Indicator.Code, value.var ="value")
 
-mydata = read.table("WDI/WDIData.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
-mydata = mydata[,1:62]
+df_jags_year = subset(df_jags,df_jags$Year == '2015')
+df_jags_year = df_jags_year[-which(rowSums(is.na(df_jags_year))> 0),]
 
-dim(mydata)
-all_code = unique(mydata[,1:2])
-all_var = unique(mydata[,3:4])
+poverty = df_jags_year$SI.POV.DDAY
+life_expacteny = df_jags_year$SP.DYN.LE00.IN
+Education = df_jags_year$SE.XPD.TOTL.GD.ZS
+n = nrow(df_jags_year)
 
-List_jags = list("SI.POV.NAGP","per_si_allsi.cov_pop_tot","per_lm_alllm.cov_pop_tot")
-
-#Social_insurance_programm_1 = list("per_si_allsi.cov_pop_tot")
-#Social_Safety_Net_programm_3 = list("per_lm_alllm.cov_pop_tot")
-
-#putting all indicators names in one list to merge all lists with a loop, see below
-#List_of_indicators_list = list(Poverty_Lines_Indicators,Social_insurance_programm_1,Social_Safety_Net_programm_2,Social_Safety_Net_programm_3)
-
-my_vars = list()
-for (i in List_jags ) {
-  my_vars = append(my_vars,i)
-}
-my_vars_c = c(my_vars)
-
-mydata = subset(mydata,mydata$Indicator.Code %in% my_vars_c)
-
-# subset the data - selected var with only 1990 - 2015 & prepare data for plotting
-mydata = mydata[,c(2:3,4:4,35:60)]
-colnames(mydata) <- sub("X", "", colnames(mydata))
-
-mydata= melt(mydata, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Values")
-
-mydata = subset(mydata,mydata$variable == '2012')
-mydataNA = mydata[-which(rowSums(is.na(mydata))> 0),]
-
-poverty_line = subset(mydata,mydata$Indicator.Code == "SI.POV.NAGP")
-social_insurance = subset(mydata,mydata$Indicator.Code == "per_si_allsi.cov_pop_tot")
-Coverage_of_unemployment_benefits = subset(mydata,mydata$Indicator.Code == "per_lm_alllm.cov_pop_tot")
-
-x = poverty_line$Values
-y1 = social_insurance$Values
-y2 = Coverage_of_unemployment_benefits$Values
-View(x)
-z = merge(poverty_line$Values,social_insurance$Values)
-z = z[-which(rowSums(is.na(z))> 1),]
-n <- nrow(poverty_line)
+x <- poverty
+y1 <- life_expacteny
+y2 <- Education
 
 library(rjags)
 
 x <- (x-mean(x))/sd(x)
 y1 <- (y1-mean(y1))/sd(y1)
 y2 <- (y2-mean(y2))/sd(y2)
+
 View(x)
-
-
 
 model_string <- "model{
 
@@ -85,10 +57,25 @@ sigma4     <- sqrt(var4)
 
 model <- jags.model(textConnection(model_string), data = list(x=x, y1=y1,y2=y2,n=n))
 
-update(model, 1000, progress.bar="none"); # Burn-in for 10000 samples
+update(model, 10000, progress.bar="none"); # Burn-in for 10000 samples
 
 samp <- coda.samples(model, 
-                     variable.names=c("beta1","beta2","beta3","beta4","sigma1","sigma2","sigma3","sigma4" ), 
+                     variable.names=c("beta1","beta2","beta3","sigma1","sigma2","sigma3","sigma4" ), 
                      n.iter=20000, progress.bar="text")
 
 summary(samp)
+
+saveRDS(samp,"modelrun.rds")
+
+traceplot(samp)
+
+# sometimes the gelman plot won't fit on a screen
+# we havve to reduce the margins
+par(mar=c(.4,.4,.4,.4))
+gelman.plot(samp)
+gelman.diag(samp)
+densplot(samp)
+acfplot(samp)
+
+# get the effective sample size
+effectiveSize(samp)
