@@ -16,7 +16,7 @@ all_var = unique(mydata[,3:4])
 #country_code = read.table("data/WDI/country_code.csv",sep=",",header=FALSE)  
 # listing all our variables and group them by UN targets or characteristics
 
-Grouping_variables_population = list("SI.POV.NAGP","SP.DYN.LE00.IN","SE.XPD.TOTL.GD.ZS","SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN","SP.URB.TOTL.IN.ZS", "SI.POV.URHC", "SP.RUR.TOTL.ZS", "SI.POV.RUHC", "SI.POV.DDAY", "SP.POP.TOTL")
+Grouping_variables_population = list("P.DYN.LE00.IN","SI.POV.NAGP","SP.DYN.LE00.IN","SE.XPD.TOTL.GD.ZS","SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN","SP.URB.TOTL.IN.ZS", "SI.POV.URHC", "SP.RUR.TOTL.ZS", "SI.POV.RUHC", "SI.POV.DDAY", "SP.POP.TOTL")
 
 
 
@@ -79,7 +79,7 @@ colnames(indicator_data_1990_2015) <- sub("X", "", colnames(indicator_data_1990_
 our_indicator_data= melt(indicator_data_1990_2015, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
 
 #setting up indicator data with country names from python @martijn
-country_names = read.table("data/country_names.csv",sep = ",", header = TRUE)
+country_names = read.table("country_names.csv",sep = ",", header = TRUE)
 country_wdi = country_names[,c(1:2,5:5)]
 
 colnames(country_wdi) = c("Country.Code","Region","Region/Country Name")
