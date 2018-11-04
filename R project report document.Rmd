@@ -34,7 +34,9 @@ To answer this research, several sub questions are defined:
 
 1.Initial data collection
 
-Our data comes from World Development Indicators database(http://data.worldbank.org/data-catalog/world-development-indicators). We focus on one of the UN Sustainable Development Goals, No Poverty. Data of over 1440 indicators of more than 200 countries and regions from 1960 to 2015 are provided in the WDI dataset, but only some of them are relevant to what we want to discuss about.  
+Our data comes from World Development Indicators database(http://data.worldbank.org/data-catalog/world-development-indicators). On the website we could download the data, WDIData.csv. We focus on one of the UN Sustainable Development Goals, No Poverty. Data of over 1440 indicators of more than 200 countries and regions from 1960 to 2015 are provided in the WDI dataset, but only some of them are relevant to what we want to discuss about.  
+
+And two problems has encountered when we try to acquire the data.
 
 First, we narrow down the scope of indicators of the following fields that might be related to ‘No poverty’ goal:
 1. Poverty headcount and poverty gap:
@@ -51,12 +53,15 @@ First, we narrow down the scope of indicators of the following fields that might
 2. Social welfare:
 -Coverage of social safety net programs (% of population)
 -Coverage of social insurance programs (% of population)
+3. Indicators that we decidede to use (life expectation, education,economy)
 
 Secondly, we choose to start our analysis in a world level to have a first sight into the data, and then focus on some certain countries with data in relatively abnormal trend. 
 
 Thirdly, we use the data from 1990 to 2015. The number of people living in extreme poverty dropped by more than half between 1990 and 2015. We want to find out the exact trend of how poverty has changed in the word thought out that period. Further more, we try to quantify the correlation between poverty in certain countries and the social welfare system in those countries to have a basic knowledge on how effective the social programs are.
 
-2.Data Description
+
+2.Data Description and quality problem 
+We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scale of both social science and economy so that we could look into the properties of poverty in a broader scope. 
 
 - Data preparation  how did we modify the data to properly use it 
 #### Chapter 3 modelling and graphs
