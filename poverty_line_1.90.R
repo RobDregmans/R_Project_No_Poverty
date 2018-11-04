@@ -12,5 +12,14 @@ poverty_melt = melt(poverty_gap_withoutNA, id=c("Indicator.Code","Indicator.Name
 ##poverty line $1.90, six regions in one graph
 regions_melt <- subset(poverty_melt, Country.Name =="East Asia & Pacific" | Country.Name =="Europe & Central Asia"| Country.Name =="Latin America & Caribbean"| Country.Name =="Middle East & North Africa"| Country.Name =="South Asia"| Country.Name =="Sub-Saharan Africa")
 gg <- ggplot(regions_melt, aes(x=as.numeric(as.character(variable)), y=value))
-gg <- gg + geom_area(aes(colour=Country.Name, fill=Country.Name))
+gg <- gg + geom_area(aes(fill=Country.Name))
+#the color of the stacked area
+gg = gg + scale_fill_brewer(palette="Greens", breaks=rev(levels(regions_melt$Country.Name)))
+#label name
+gg <- gg + labs(x="Year", y="Poverty ratio",col="Regions")
+#label of the legend
+gg <- gg + guides(fill = guide_legend(title = "Region"))
+#remove the background and grid
+gg <- gg + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                              panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
 gg
