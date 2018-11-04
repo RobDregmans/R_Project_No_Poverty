@@ -126,12 +126,10 @@ We assume that indicators about social safety program, education, life expectati
 First we explore our data, by analysing the data and to 
 
 
-3 Data analysis
-Within chapter 3, we try to answer our research question by means of several sub questions, see section 1.2. This is mainly done by analysing large datasets and trying to visualise this data by means of appropriate graphs. We try to gain more insight in the state of of poverty around the world. 
+3.1 Data analysis
+Within chapter 3, we try to answer our research question by means of several sub questions, see section 1.2. This is mainly done by analysing large datasets and trying to visualise this data by means of appropriate graphs. We try to gain more insight in the causes and effects of persistence of hunger in Sub Saharan Africa. These insights will then be used to advice some further steps take can be taken to start on working towards policies that counteract the rise of hunger in Sub Saharan Africa.
 
-
-
-3.1 The state of poverty in the world
+Firstly, the current state of hunger in Sub Saharan Africa will be analysed by looking at the food deficit and the prevalence of undernourishment in Africa compared to the World and distribution of the PoU within countries in the Sub Saharan Africa region, see section 4.1. To answer the second research question, several bar charts are created that give an overview of the development of stunting, wasting overweight, anaemia and exclusive breastfeeding in the period of 2010 - 2017, see section 4.2. For the third research question, the cereal yield, population and food index have been analysed, see section 4.3. To answer the fourth research question, several regression analyses are carried out to analyse the development of natural hazards within Africa. A statistical analysis has been carried out to estimate the significance of environmental hazards on the PoU within low & middle-income countries, see section 4.4. Finally, in section 4.5 the future trend of the PoU for Sub Saharan Africa will be estimated and estimations about the future trend of environmental hazards and their impact on the food security shall be derived.  
 
 
 ```

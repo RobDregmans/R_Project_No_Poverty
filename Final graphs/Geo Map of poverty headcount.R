@@ -48,5 +48,3 @@ k <- plot_geo(df_mean_pov) %>%
     title = 'Prevalance of Extreme Poverty during 2010 - 2015 (below 1.90$ a day)',
     geo = g )
 k
-
-
