@@ -3,13 +3,17 @@ title: "R Project Report"
 output: html_document
 ---
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "C:/Users/Rob/Documents/GitHub/data")
 library(reshape)
 library(reshape2)
 library(dplyr)
 library(tidyr)
 library(plotly)
+library(ineq)
+library(ggplot2)
 ```
 
 ### Report storyline
@@ -124,7 +128,7 @@ We assume that indicators about social safety program, education, life expectati
 the data:
 ```{r}
 # Read the data in correctly
-mydata_utf8 = read.table("WDI/WDIData.csv/",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
+mydata_utf8 = read.table("WDI/WDIData.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
 
 # drop off the final blank column
 mydata = mydata_utf8[,1:62]
@@ -188,7 +192,6 @@ for (i in List_of_indicators_list ) {
 my_vars_c = c(my_vars)
 
 # subset the data - selected var with all years
-#country_data = subset(mydata,mydata$Country.Code %in% country_code$V1)
 indicator_data = subset(mydata,mydata$Indicator.Code %in% my_vars_c)
 
 # subset the data - selected var with only 1990 - 2015 & prepare data for plotting
@@ -241,6 +244,22 @@ wide <- na.omit(wide)
 wide$SI.POV.DDAY <- wide$SI.POV.DDAY/100
 #multiply the data to get the absolute number of people living in poverty
 wide$absolute <- wide$SI.POV.DDAY * wide$SP.POP.TOTL
+
+#CODE FOR THE GINI INDICES
+# indicator code for gini index
+my_vars_c = c("SI.POV.GINI")
+# subset the data - selected var 
+indicator_datagini = subset(indicator_data,indicator_data$Indicator.Code %in% my_vars_c)
+
+# LINE PLOT FOR THE COUNTRIES WITH THE HIGHEST GINI INDEXES
+# extract the right years (25:60 is 1980 till 2015)
+id = indicator_datagini[,c(1:3,4:4, 25:60)]
+# remove the 'X' in the columns
+colnames(id) <- sub("X", "", colnames(id))
+# change the format
+idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code", "Country.Name"), value.name = "Year")
+# throw away the rows with missing data
+idm <- na.omit(idm, cols="value")
 ```
 
 #### Chapter 3 modelling and graphs
@@ -259,7 +278,6 @@ Within chapter 3, we try to answer our research question by means of several sub
 3.1 The state of poverty in the world
 The code below plots the absolute number op people living in poverty (below 1.90$ a day) over the years 1980 till 2015
 ```{r}
-library(plotly)
 #layout
 a <- list(
   title = "Years",
@@ -304,7 +322,6 @@ df_mean_pov$MeanPop = round(df_mean_pov$MeanPop,2)
 df_mean_pov$MeanHeadCount = round(df_mean_pov$MeanHeadCount,2)
 df_mean_pov$MeanPovPop = round(df_mean_pov$MeanPovPop,2)
 
-
 # light grey boundaries
 l <- list(color = toRGB("grey"), width = 0.5)
 
@@ -340,29 +357,9 @@ k
 Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map.
 
 ```{r}
-
-library(reshape)
-library(reshape2)
-library(ineq)
-library(plotly)
-
-# indicator code for gini index
-my_vars_c = c("SI.POV.GINI")
-# subset the data - selected var 
-indicator_datagini = subset(indicator_data,indicator_data$Indicator.Code %in% my_vars_c)
-
-# LINE PLOT FOR THE COUNTRIES WITH THE HIGHEST GINI INDEXES
-# extract the right years (25:60 is 1980 till 2015)
-id = indicator_datagini[,c(1:3,4:4, 25:60)]
-# remove the 'X' in the columns
-colnames(id) <- sub("X", "", colnames(id))
-# change the format
-idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code", "Country.Name"), value.name = "Year")
-# throw away the rows with missing data
-idm <- na.omit(idm, cols="value")
-
-# subset with only those countries
+#What countries have the lowest gini indices?
 cl <- c("MDG","BDI","MWI","GNB","MOZ","ZMB","LSO")
+# subset with only those countries
 idmc <- subset(idm,idm$Country.Code %in% cl)
 # plot the gini idexes of those countries over time
 x <- list( title = "Years" )
@@ -371,6 +368,11 @@ m <- list(l=150, r=20, b=70, t=10)
 pline <- plot_ly(idmc, x = ~idmc$variable, y = ~idmc$value, color = ~idmc$Country.Code) %>%
   add_lines(line = list(shape = "spline"))  %>% layout(xaxis = x, yaxis = y, margin=m)
 pline
+```
+
+Below is the code for the lorenzcurve of the countrie with the lowest Gini Index. The lorenzcurve shows the distribution of wealth between the people in a country. Every Lorenzcurve has it own gini score. The more away the lorenzcurve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed.
+
+```{r}
 
 # PLOT THE LORENZ CURVE OF ONE OF THE COUNTRIES (if a flat line occurs, there is no data)
 # Get the indicators for the lorenz curve
@@ -392,6 +394,71 @@ plot(Lc.c)
 
 gini_index_country = Gini(d20)
 
+```
+Below is the code for the bubble graph1
+```{r}
+#making bubble chart of poverty 3.10 and life expectancy
+colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
+var_i = c("SE.XPD.TOTL.GD.ZS","SI.POV.DDAY","SP.POP.TOTL")
+
+
+#subset the data with only the world and the two indicators above about population and people in poverty and life expectancy
+graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+test <- subset(graph_data, select = c("Indicator.Code","Region", "Country.Name", "Country.Code", "Year", "value"))
+df_bubble = dcast(test,Country.Code + Country.Name + Region + Year ~ Indicator.Code, value.var ="value")
+df_bubble_2013 = df_bubble[which(df_bubble$Year == 2012),]
+df_bubble_2013$SP.POP.TOTL = df_bubble_2013$SP.POP.TOTL/1000000
+df_bubble_2013$SI.POV.DDAY = df_bubble_2013$SI.POV.DDAY/100
+df_bubble_2013$TotalPopPov = df_bubble_2013$SI.POV.DDAY * df_bubble_2013$SP.POP.TOTL
+
+colnames(df_bubble_2013) = c("Country.Code", "Country.Name","Region","Year","EduSpending", "Poverty","TotalPop","TotalPopPov")
+
+#omit NA's
+df_bubble_2013_na = na.omit(df_bubble_2013)
+#order to omit regions, only hold countries
+df_bubble_2013_na = df_bubble_2013_na[order(df_bubble_2013_na$Region, df_bubble_2013_na$Country.Name),]
+x = as.numeric(dim(df_bubble_2013_na))
+k = x[1]
+df_bubble_2013_na = df_bubble_2013_na[c(13:k),]
+#fix values with to many decimals and poverty percentage value
+df_bubble_2013_na$Poverty = df_bubble_2013_na$Poverty *100
+df_bubble_2013_na$Poverty = round(df_bubble_2013_na$Poverty,2)
+df_bubble_2013_na$TotalPop = round(df_bubble_2013_na$TotalPop,2)
+df_bubble_2013_na$TotalPopPov = round(df_bubble_2013_na$TotalPopPov,2)
+df_bubble_2013_na$EduSpending = round(df_bubble_2013_na$EduSpending,2)
+
+#determine size per bubble
+slope <- 2.8e-6
+df_bubble_2013_na$size <- sqrt(df_bubble_2013_na$Poverty * slope)*5000
+colors = c('#FF934F','#FFD166','#5FCC8C','#EF6464','#5DCBEF','#8C6ACC','#CC6AAC')
+
+
+
+p <- plot_ly(df_bubble_2013_na, x = ~EduSpending, y = ~Poverty, color = ~Region, size = ~size, colors = colors,
+             type = 'scatter', mode = 'markers', sizes = c(min(df_bubble_2013_na$size), max(df_bubble_2013_na$size)),
+             marker = list(symbol = 'circle', sizemode = 'diameter',
+                           line = list(width = 2, color = '#FFFFFF')),
+             text = ~paste('Country:', Country.Name,
+                           '<br> Region:', Region,
+                           '<br>Spending on Education % of GDP:', EduSpending,"%",
+                           "<br> Percentage of population living in Extreme Poverty", Poverty,"%",
+                           "<br> Total population living in Extreme Poverty:", TotalPopPov,"M",
+                           '<br> Total population:', TotalPop, "M")) %>%
+  layout(title = 'Public spending on education and the prevalence of Extreme Poverty',
+         xaxis = list(title = 'Public spending on education (% of GDP)',
+                      gridcolor = 'rgb(255, 255, 255)',
+                      zerolinewidth = 1,
+                      ticklen = 4,
+                      gridwidth = 2),
+         yaxis = list(title = 'Prevalence of Poverty (%population)',
+                      gridcolor = 'rgb(255, 255, 255)',
+                      zerolinewidth = 1,
+                      ticklen = 5,
+                      gridwith = 2),
+         paper_bgcolor = 'rgb(243, 243, 243)',
+         plot_bgcolor = 'rgb(243, 243, 243)')
+
+p
 ```
 
 #### Chapter 4 evaluation
