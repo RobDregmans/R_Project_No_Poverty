@@ -48,17 +48,3 @@ Lc.c <- Lc(d20, p20)
 plot(Lc.c)
 
 gini_index_country = Gini(d20)
-
-
-
-
-
-
-
-
-
-
-# get the countries with the 10 highest gini indexes. Some countries will be double, but that is not a problem
-idm2 <- idm[order(idm$value,decreasing=T)[1:10],]
-# make a vector of the countries above
-v <- idm2[,3]
