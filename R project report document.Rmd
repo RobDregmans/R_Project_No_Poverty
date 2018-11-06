@@ -146,6 +146,8 @@ all_var = unique(mydata[,3:4])
 
 Grouping_variables_population = list("SE.XPD.TOTL.GD.ZS","P.DYN.LE00.IN","SI.POV.NAGP","SP.DYN.LE00.IN","SE.XPD.TOTL.GD.ZS","SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN","SP.URB.TOTL.IN.ZS", "SI.POV.URHC", "SP.RUR.TOTL.ZS", "SI.POV.RUHC", "SI.POV.DDAY", "SP.POP.TOTL")
 
+Predictor_variables = list("SP.DYN.LE00.IN", "SE.XPD.TOTL.GD.ZS","SN.ITK.DEFC.ZS","SH.DYN.MORT")
+
 
 Target_1_Headcount_Poverty_190_320_550 = list("SI.POV.DDAY","SI.POV.LMIC,SI.POV.UMIC","SI.POV.GAPS","SI.POV.LMIC.GP","SI.POV.UMIC.GP")
 
@@ -184,7 +186,7 @@ indicators_life_span = list("SH.DTH.IMRT","SP.DTH.INFR.ZS","SP.DTH.INFR.ZS","SP.
                          "SP.DYN.IMRT.IN","SP.DYN.IMRT.FE.IN","SP.DYN.IMRT.MA.IN")
 
 #putting all indicators names in one list to merge all lists with a loop, see below
-List_of_indicators_list = list(indicators_life_span,indicators_economy,indicators_income_share, Target_3_C_Social_Safety_Net_programm,Target_3_B_Social_Safety_Net_programm,Target_3_A_Social_insurance_programm,Target_2_National_Poverty_Lines_Indicator,Target_1_Headcount_Poverty_190_320_550,Grouping_variables_population)
+List_of_indicators_list = list(Predictor_variables,indicators_life_span,indicators_economy,indicators_income_share, Target_3_C_Social_Safety_Net_programm,Target_3_B_Social_Safety_Net_programm,Target_3_A_Social_insurance_programm,Target_2_National_Poverty_Lines_Indicator,Target_1_Headcount_Poverty_190_320_550,Grouping_variables_population)
 
 my_vars = list()
 for (i in List_of_indicators_list ) {
