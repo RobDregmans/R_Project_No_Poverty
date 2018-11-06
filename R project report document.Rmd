@@ -123,8 +123,14 @@ Thirdly, we use the data from 1990 to 2015. The number of people living in extre
 Last, we want to predict the missing data on poverty with our regression model using predictors of life expectancy, education, and mortality of infants, and with the data we will get a fuller picture of how the poverty will be reduced in the future.
 
 2.Data Description and quality problem 
-We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scale of both social science and economy so that we could look into the properties of poverty in a broader scope. 
+We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis that social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scales of both social science and economy so that we could look into the properties of poverty with a broader scope. 
+*Missing part: Quantity of the data:*
+But in the indicators we choose, a lot of data is missing. We have two solutions on the missing data. Strategy one is to drop off the data with a lot of missing part. The other way is more…
+*What do we do with the missing data:*
+For the world map, 
 
+Also, we try to make a multiple regression model based on Baye’s rule using the predictors we choose, again within the predictors there are lot of missing data(i.e. NA in the predictor education). *how many missing data are there*
+To deal with the problem, …
 - Data preparation  how did we modify the data to properly use it 
 1.Loading, choosing data we need and merging
 Here we make a list of name of data in the fields that we are interested in, merge them in to one single longer list and make a subset of the data we want.
@@ -210,6 +216,97 @@ indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
 colnames(indicator_data_1990_2015) <- sub("X", "", colnames(indicator_data_1990_2015))
 
 our_indicator_data= melt(indicator_data_1990_2015, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
+#setting up indicator data with country names from python @martijn
+country_names = read.table("country_names.csv",sep = ",", header = TRUE)
+country_wdi = country_names[,c(1:2,5:5)]
+
+colnames(country_wdi) = c("Country.Code","Region","Region/Country Name")
+our_indicator_data = merge(country_wdi,our_indicator_data,id = "Country.Code")
+colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year","Value")
+
+#Obtaining lists for information about regions & countries
+all_region_and_country_codes=our_indicator_data[,1:3]
+all_region_and_country_codes=unique(all_region_and_country_codes)
+all_regions = subset(all_region_and_country_codes, all_region_and_country_codes$Region == "")
+all_countries = subset(all_region_and_country_codes, all_region_and_country_codes$Region != "")
+
+#did a work around because factor levels in R are stupid
+general_regions = unique(all_countries['Region'])
+region_list = c('Latin America & Caribbean','South Asia','Sub-Saharan Africa','Europe & Central Asia','Middle East & North Africa','East Asia & Pacific','North America')
+
+#Subset to extract regions
+regions_used = subset(all_regions, all_regions$'Region/Country Name' %in% region_list)
+regions_used = regions_used[,-c(2)]
+
+#FOR THE LINECHART ABOUT ABSOLUTE POVERTY
+world = c("WLD")
+var_i = c("SI.POV.DDAY", "SP.POP.TOTL")
+#subset the data with only the world and the two indicators above about population and people in poverty in %
+graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+graph_data = subset(graph_data,graph_data$'Country.Code' %in% world)
+#split the indicator column into two columns
+wide = dcast(graph_data, Indicator.Name + Country.Code + Year ~ Indicator.Code,  value.var = "Value" , fun.aggregate = mean, na.rm = T)
+#this is a workaround for getting for each year the value for the two indicators into the same row
+new1 <- wide[order(wide$SP.POP.TOTL),]
+pop <- new1[1:26,]
+new2 <- wide[order(wide$SI.POV.DDAY),]
+si<-subset(new2,new2$SI.POV.DDAY != "NaN") 
+si2 <-subset(si, select=c("SI.POV.DDAY", "Year"))
+pop <- subset(pop, select = -SI.POV.DDAY )
+wide = merge(pop,si2,id = "Year")
+#omit all na values
+wide <- na.omit(wide)
+#divide the percentage indicator by 100 to get it scaled between 0 and 1
+wide$SI.POV.DDAY <- wide$SI.POV.DDAY/100
+#multiply the data to get the absolute number of people living in poverty
+wide$absolute <- wide$SI.POV.DDAY * wide$SP.POP.TOTL
+
+#CODE FOR THE GINI INDICES
+# indicator code for gini index
+my_vars_c = c("SI.POV.GINI")
+# subset the data - selected var 
+indicator_datagini = subset(indicator_data,indicator_data$Indicator.Code %in% my_vars_c)
+
+# LINE PLOT FOR THE COUNTRIES WITH THE HIGHEST GINI INDEXES
+# extract the right years (25:60 is 1980 till 2015)
+id = indicator_datagini[,c(1:3,4:4, 25:60)]
+# remove the 'X' in the columns
+colnames(id) <- sub("X", "", colnames(id))
+# change the format
+idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code", "Country.Name"), value.name = "Year")
+# throw away the rows with missing data
+idm <- na.omit(idm, cols="value")
+
+#CODE FOR MAKING THE FIRST BUBBLE CHART
+#making bubble chart of poverty 3.10 and life expectancy
+colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
+var_i = c("SE.XPD.TOTL.GD.ZS","SI.POV.DDAY","SP.POP.TOTL")
+
+
+#subset the data with only the world and the two indicators above about population and people in poverty and life expectancy
+graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+test <- subset(graph_data, select = c("Indicator.Code","Region", "Country.Name", "Country.Code", "Year", "value"))
+df_bubble = dcast(test,Country.Code + Country.Name + Region + Year ~ Indicator.Code, value.var ="value")
+df_bubble_2013 = df_bubble[which(df_bubble$Year == 2012),]
+df_bubble_2013$SP.POP.TOTL = df_bubble_2013$SP.POP.TOTL/1000000
+df_bubble_2013$SI.POV.DDAY = df_bubble_2013$SI.POV.DDAY/100
+df_bubble_2013$TotalPopPov = df_bubble_2013$SI.POV.DDAY * df_bubble_2013$SP.POP.TOTL
+
+colnames(df_bubble_2013) = c("Country.Code", "Country.Name","Region","Year","EduSpending", "Poverty","TotalPop","TotalPopPov")
+
+#omit NA's
+df_bubble_2013_na = na.omit(df_bubble_2013)
+#order to omit regions, only hold countries
+df_bubble_2013_na = df_bubble_2013_na[order(df_bubble_2013_na$Region, df_bubble_2013_na$Country.Name),]
+x = as.numeric(dim(df_bubble_2013_na))
+k = x[1]
+df_bubble_2013_na = df_bubble_2013_na[c(13:k),]
+#fix values with to many decimals and poverty percentage value
+df_bubble_2013_na$Poverty = df_bubble_2013_na$Poverty *100
+df_bubble_2013_na$Poverty = round(df_bubble_2013_na$Poverty,2)
+df_bubble_2013_na$TotalPop = round(df_bubble_2013_na$TotalPop,2)
+df_bubble_2013_na$TotalPopPov = round(df_bubble_2013_na$TotalPopPov,2)
+df_bubble_2013_na$EduSpending = round(df_bubble_2013_na$EduSpending,2)
 
 ```
 
@@ -350,42 +447,10 @@ gini_index_country = Gini(d20)
 ```
 Below is the code for the bubble graph1
 ```{r}
-#making bubble chart of poverty 3.10 and life expectancy
-colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
-var_i = c("SE.XPD.TOTL.GD.ZS","SI.POV.DDAY","SP.POP.TOTL")
-
-
-#subset the data with only the world and the two indicators above about population and people in poverty and life expectancy
-graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
-test <- subset(graph_data, select = c("Indicator.Code","Region", "Country.Name", "Country.Code", "Year", "value"))
-df_bubble = dcast(test,Country.Code + Country.Name + Region + Year ~ Indicator.Code, value.var ="value")
-df_bubble_2013 = df_bubble[which(df_bubble$Year == 2012),]
-df_bubble_2013$SP.POP.TOTL = df_bubble_2013$SP.POP.TOTL/1000000
-df_bubble_2013$SI.POV.DDAY = df_bubble_2013$SI.POV.DDAY/100
-df_bubble_2013$TotalPopPov = df_bubble_2013$SI.POV.DDAY * df_bubble_2013$SP.POP.TOTL
-
-colnames(df_bubble_2013) = c("Country.Code", "Country.Name","Region","Year","EduSpending", "Poverty","TotalPop","TotalPopPov")
-
-#omit NA's
-df_bubble_2013_na = na.omit(df_bubble_2013)
-#order to omit regions, only hold countries
-df_bubble_2013_na = df_bubble_2013_na[order(df_bubble_2013_na$Region, df_bubble_2013_na$Country.Name),]
-x = as.numeric(dim(df_bubble_2013_na))
-k = x[1]
-df_bubble_2013_na = df_bubble_2013_na[c(13:k),]
-#fix values with to many decimals and poverty percentage value
-df_bubble_2013_na$Poverty = df_bubble_2013_na$Poverty *100
-df_bubble_2013_na$Poverty = round(df_bubble_2013_na$Poverty,2)
-df_bubble_2013_na$TotalPop = round(df_bubble_2013_na$TotalPop,2)
-df_bubble_2013_na$TotalPopPov = round(df_bubble_2013_na$TotalPopPov,2)
-df_bubble_2013_na$EduSpending = round(df_bubble_2013_na$EduSpending,2)
-
 #determine size per bubble
 slope <- 2.8e-6
 df_bubble_2013_na$size <- sqrt(df_bubble_2013_na$Poverty * slope)*5000
 colors = c('#FF934F','#FFD166','#5FCC8C','#EF6464','#5DCBEF','#8C6ACC','#CC6AAC')
-
-
 
 p <- plot_ly(df_bubble_2013_na, x = ~EduSpending, y = ~Poverty, color = ~Region, size = ~size, colors = colors,
              type = 'scatter', mode = 'markers', sizes = c(min(df_bubble_2013_na$size), max(df_bubble_2013_na$size)),
@@ -410,7 +475,6 @@ p <- plot_ly(df_bubble_2013_na, x = ~EduSpending, y = ~Poverty, color = ~Region,
                       gridwith = 2),
          paper_bgcolor = 'rgb(243, 243, 243)',
          plot_bgcolor = 'rgb(243, 243, 243)')
-
 p
 ```
 
