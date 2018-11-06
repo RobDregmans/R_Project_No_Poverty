@@ -118,17 +118,21 @@ First, we narrow down the scope of indicators of the following fields that might
 
 Secondly, we choose to start our analysis in a world level to have a first sight into the data, and then focus on some certain countries with data in relatively abnormal trend. 
 
-Thirdly, we use the data from 1990 to 2015. The number of people living in extreme poverty dropped by more than half between 1990 and 2015. We want to find out the exact trend of how poverty has changed in the word thought out that period. Further more, we try to quantify the correlation between poverty in certain countries and the social welfare system in those countries to have a basic knowledge on how effective the social programs are.
+Thirdly, we use the data from 1990 to 2015. The number of people living in extreme poverty dropped by more than half between 1990 and 2015. We want to find out the exact trend of how poverty has changed in the word thought out that period. Further more, we try to quantify the correlation between poverty in certain countries and the social welfare system in those countries to have a basic knowledge on how effective the social programs are. 
 
+Last, we want to predict the missing data on poverty with our regression model using predictors of life expectancy, education, and mortality of infants, and with the data we will get a fuller picture of how the poverty will be reduced in the future.
 
 2.Data Description and quality problem 
 We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scale of both social science and economy so that we could look into the properties of poverty in a broader scope. 
 
 - Data preparation  how did we modify the data to properly use it 
-the data:
+1.Loading, choosing data we need and merging
+Here we make a list of name of data in the fields that we are interested in, merge them in to one single longer list and make a subset of the data we want.
+
 ```{r}
+
 # Read the data in correctly
-mydata_utf8 = read.table("WDI/WDIData.csv/",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
+mydata_utf8 = read.table("WDI/WDIData.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
 
 # drop off the final blank column
 mydata = mydata_utf8[,1:62]
@@ -181,7 +185,6 @@ indicators_economy = list("NY.GNP.PCAP.CD","NY.GNP.MKTP.CN","FP.CPI.TOTL.ZG","NY
 indicators_life_span = list("SH.DTH.IMRT","SP.DTH.INFR.ZS","SP.DTH.INFR.ZS","SP.DYN.TO65.FE.ZS","SP.DYN.TO65.MA.ZS",
                          "SP.DYN.IMRT.IN","SP.DYN.IMRT.FE.IN","SP.DYN.IMRT.MA.IN")
 
-
 #putting all indicators names in one list to merge all lists with a loop, see below
 List_of_indicators_list = list(indicators_life_span,indicators_economy,indicators_income_share, Target_3_C_Social_Safety_Net_programm,Target_3_B_Social_Safety_Net_programm,Target_3_A_Social_insurance_programm,Target_2_National_Poverty_Lines_Indicator,Target_1_Headcount_Poverty_190_320_550,Grouping_variables_population)
 
@@ -191,7 +194,15 @@ for (i in List_of_indicators_list ) {
 }
 my_vars_c = c(my_vars)
 
+```
+
+2.Reshaping
+But for purpose of easier use, we reshape the data into the format that in each row, there’s one value of an indicator in one country of one year, with the columns of country code, region, country name, indicator code, indicator name, year, and the value. Also we delete the “X” in the name of years.
+
+```{r}
+
 # subset the data - selected var with all years
+#country_data = subset(mydata,mydata$Country.Code %in% country_code$V1)
 indicator_data = subset(mydata,mydata$Indicator.Code %in% my_vars_c)
 
 # subset the data - selected var with only 1990 - 2015 & prepare data for plotting
@@ -200,77 +211,9 @@ colnames(indicator_data_1990_2015) <- sub("X", "", colnames(indicator_data_1990_
 
 our_indicator_data= melt(indicator_data_1990_2015, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
 
-#setting up indicator data with country names from python @martijn
-country_names = read.table("country_names.csv",sep = ",", header = TRUE)
-country_wdi = country_names[,c(1:2,5:5)]
-
-colnames(country_wdi) = c("Country.Code","Region","Region/Country Name")
-our_indicator_data = merge(country_wdi,our_indicator_data,id = "Country.Code")
-colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year","Value")
-
-#Obtaining lists for information about regions & countries
-all_region_and_country_codes=our_indicator_data[,1:3]
-all_region_and_country_codes=unique(all_region_and_country_codes)
-all_regions = subset(all_region_and_country_codes, all_region_and_country_codes$Region == "")
-all_countries = subset(all_region_and_country_codes, all_region_and_country_codes$Region != "")
-
-#did a work around because factor levels in R are stupid
-general_regions = unique(all_countries['Region'])
-region_list = c('Latin America & Caribbean','South Asia','Sub-Saharan Africa','Europe & Central Asia','Middle East & North Africa','East Asia & Pacific','North America')
-
-#Subset to extract regions
-regions_used = subset(all_regions, all_regions$'Region/Country Name' %in% region_list)
-regions_used = regions_used[,-c(2)]
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 550fc3efa776449e43475666e2197059ce60c2fa
-#FOR THE LINECHART ABOUT ABSOLUTE POVERTY
-world = c("WLD")
-var_i = c("SI.POV.DDAY", "SP.POP.TOTL")
-#subset the data with only the world and the two indicators above about population and people in poverty in %
-graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
-graph_data = subset(graph_data,graph_data$'Country.Code' %in% world)
-#split the indicator column into two columns
-wide = dcast(graph_data, Indicator.Name + Country.Code + Year ~ Indicator.Code,  value.var = "Value" , fun.aggregate = mean, na.rm = T)
-#this is a workaround for getting for each year the value for the two indicators into the same row
-new1 <- wide[order(wide$SP.POP.TOTL),]
-pop <- new1[1:26,]
-new2 <- wide[order(wide$SI.POV.DDAY),]
-si<-subset(new2,new2$SI.POV.DDAY != "NaN") 
-si2 <-subset(si, select=c("SI.POV.DDAY", "Year"))
-pop <- subset(pop, select = -SI.POV.DDAY )
-wide = merge(pop,si2,id = "Year")
-#omit all na values
-wide <- na.omit(wide)
-#divide the percentage indicator by 100 to get it scaled between 0 and 1
-wide$SI.POV.DDAY <- wide$SI.POV.DDAY/100
-#multiply the data to get the absolute number of people living in poverty
-wide$absolute <- wide$SI.POV.DDAY * wide$SP.POP.TOTL
-<<<<<<< HEAD
-
-#CODE FOR THE GINI INDICES
-# indicator code for gini index
-my_vars_c = c("SI.POV.GINI")
-# subset the data - selected var 
-indicator_datagini = subset(indicator_data,indicator_data$Indicator.Code %in% my_vars_c)
-
-# LINE PLOT FOR THE COUNTRIES WITH THE HIGHEST GINI INDEXES
-# extract the right years (25:60 is 1980 till 2015)
-id = indicator_datagini[,c(1:3,4:4, 25:60)]
-# remove the 'X' in the columns
-colnames(id) <- sub("X", "", colnames(id))
-# change the format
-idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code", "Country.Name"), value.name = "Year")
-# throw away the rows with missing data
-idm <- na.omit(idm, cols="value")
 ```
-=======
->>>>>>> 030ed247866180f920b1c2b619efaf5006943351
-=======
-```
->>>>>>> 550fc3efa776449e43475666e2197059ce60c2fa
+
+
 
 #### Chapter 3 modelling and graphs
 -	Define a descriptive model for the relevant data (Visual graphs)
