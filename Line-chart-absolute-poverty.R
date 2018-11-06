@@ -18,4 +18,3 @@ b <- list(
 #plot the graph
 plot_ly(wide, x = ~Year, y = ~absolute, type = 'scatter', mode = 'lines') %>% 
   layout(xaxis = a, yaxis = b)
-
