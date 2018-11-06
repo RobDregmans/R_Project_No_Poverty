@@ -12,5 +12,3 @@ df_correlation = subset(df_correlation, df_correlation$Year==2012)
 i = df_correlation$"SP.DYN.IMRT.IN"
 
 cor(df_correlation$SI.POV.DDAY,i ,method = "pearson", use = "complete.obs")
-
-list("SH.DYN.MORT","SP.DYN.IMRT.IN","SN.ITK.DEFC.ZS"
