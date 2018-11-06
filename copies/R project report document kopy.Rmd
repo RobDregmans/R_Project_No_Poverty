@@ -1,0 +1,205 @@
+---
+title: "R Project Report"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Report storyline
+
+#### Chapter 1
+- Problem understanding = Introduction on poverty
+- Research question formulation:
+
+Main question: 
+How did poverty develop around the world since 1990 to national and absolute dimension and how is this related to the presence of social safety programs?
+
+To answer this research, several sub questions are defined:
+
+-  Question 1: How did poverty for all develop from 1990 – 2015 for national and absolute dimensions?
+	- To national definitions  world map
+	- To UN definitions 1.90,350,5,50 -> stacked linechart 
+- Question 2: How is wealth distributed for countries with a relatively high poverty headcount to national poverty lines.
+	- GINI index and Lorenz curve for pick five worst from national map
+- Question 3: What is the effect of social programs on the prevalence of poverty according to national poverty lines?
+	- Barchart of absolute and percentage population living under national poverty line
+	- Regression with seaborn (python example) x = poverty, y social program
+	
+## 1 Introduction to poverty
+The world has committed itself to intensive targets for reducing poverty by 2030. The goal to reduce poverty and its related side effects are specified in Sustainable Development Goal (SDG) number one of the total seventeen SDG's set up in the 2030 Agenda for Sustainable Development. All seventeen goals and quantive targets are meant to stimulate action over the next fifteen years in areas of critical importance for humanity and the planet [2]. 
+
+The negative effects of povety are enormous. Poverty and related effects slow down development within whole countries. Certain groups are disproportionately represented and face additional constraints, such as limited access to resources and capabilities in escaping poverty. These include women, persons with disabilities, children, and indigenous peoples.
+
+### 1.1 UN Targets
+
+Eradicating poverty is not about charity, it is an act of justice. It could also unlock an enormous human potential that is to present day have been diminisshed. Still, nearly half of the world’s population lives in poverty. To battle poverty, the UN have constructed several quantative targets that need to be reaced by 2030, see below.
+
+Target 1: By 2030, eradicate extreme poverty for all people everywhere, currently measured as people living on less than $1.25 a day.
+
+Target 2: By 2030, reduce at least by half the proportion of men, women and children of all ages living in poverty in all its dimensions according to national definitions.
+
+Target 3: Implement nationally appropriate social protection systems and measures for all, including floors, and by 2030 achieve substantial coverage of the poor and the vulnerable.
+
+Target 4: By 2030, ensure that all men and women, in particular the poor and the vulnerable, have equal rights to economic resources, as well as access to basic services, ownership and control over land and other forms of property, inheritance, natural resources, appropriate new technology and financial services, including microfinance.
+
+Target 5: By 2030, build the resilience of the poor and those in vulnerable situations and reduce their exposure and vulnerability to climate-related extreme events and other economic, social and environmental shocks and disasters.
+
+These targets have been used to draft our research question, see the next paragraph. 
+
+### 1.2 Goal and research questions
+
+Eradicating poverty is not about charity, it is an act of justice. It could also unlock an enormous human potential that is to present day have been diminisshed. Still, nearly half of the world’s population lives in poverty. To obtain more insight in poverty and its underlying relations causes and effects, the folowwing research question have been constructed, see below.
+
+Main research question: 
+How did poverty develop around the world since 1990 to national and absolute dimension and how is this related to the presence of social safety programs?
+
+To answer this research, several sub questions are defined:
+
+-  Question 1: How did poverty for all develop from 1990 – 2015 for national and absolute dimensions?
+	- To national definitions  world map
+	- To UN definitions 1.90,350,5,50 -> stacked linechart 
+	- Distribution for men/women/children stacked bar chart for three groups
+	
+- Question 2: How is wealth distributed for countries with a relatively high poverty headcount to national poverty lines.
+	- GINI index and Lorenz curve for pick five worst from national map
+	
+- Question 3: What is the effect of social programs on the prevalence of poverty according to national poverty lines?
+	- Barchart of absolute and percentage population living under national poverty line
+	- Regression with seaborn (python example) x = poverty, y social program
+
+### 1.3 Methodology and Research Goal 
+Within this report, we try to gain more insight behind the data of poverty around the world. First, we will clean and analyse the data by selecting the relevant indicators. By means of critical analysis and interpretation of figures and numbers, we try to find relations in the data to obtain useful conclusion for our recommendation to policy makers. Also, relevant primary research on the topic of Zero Hunger and food security will be included to compare our primary research findings.
+
+R-studio is used as a tool to perform the data analysis within this research. R is widely used as a programming language for the visualisation of data. It contains additional packages that are very powerful for data analysis and visualisation purposes. Within our computations in R, several additional packages have been used. For example, Plotly has been used to make our detailed graphics. In Plotly visualisations are displayed in an efficient way and many possibilities to visualize the data are present.
+
+
+Resources
+https://www.globalgoals.org/1-no-poverty
+https://sdgcompass.org/sdgs/sdg-1/
+https://ourworldindata.org/extreme-poverty
+	
+#### Chapter 2
+
+- Data understanding  introduce used databases + data descriptives
+
+1.Initial data collection
+
+Our data comes from World Development Indicators database(http://data.worldbank.org/data-catalog/world-development-indicators). On the website we could download the data, WDIData.csv. We focus on one of the UN Sustainable Development Goals, No Poverty. Data of over 1440 indicators of more than 200 countries and regions from 1960 to 2015 are provided in the WDI dataset, but only some of them are relevant to what we want to discuss about.  
+
+And two problems has encountered when we try to acquire the data.
+
+First, we narrow down the scope of indicators of the following fields that might be related to ‘No poverty’ goal:
+1. Poverty headcount and poverty gap:
+-Poverty headcount ratio at national poverty lines (% of population)
+-Rural poverty headcount ratio at national poverty lines (% of rural population)
+-Urban poverty headcount ratio at national poverty lines (% of urban population)
+-Poverty headcount ratio at $1.90 a day (2011 PPP) (% of population)
+-Poverty headcount ratio at $3.20 a day (2011 PPP) (% of population)
+-Poverty headcount ratio at $5.50 a day (2011 PPP) (% of population)
+-Poverty gap at $1.90 a day (2011 PPP) (%)
+-Poverty gap at $3.20 a day (2011 PPP) (%)
+-Poverty gap at $5.50 a day (2011 PPP) (%)
+-Poverty gap at national poverty lines (%)
+2. Social welfare:
+-Coverage of social safety net programs (% of population)
+-Coverage of social insurance programs (% of population)
+3. Indicators that we decidede to use (life expectation, education,economy)
+
+Secondly, we choose to start our analysis in a world level to have a first sight into the data, and then focus on some certain countries with data in relatively abnormal trend. 
+
+Thirdly, we use the data from 1990 to 2015. The number of people living in extreme poverty dropped by more than half between 1990 and 2015. We want to find out the exact trend of how poverty has changed in the word thought out that period. Further more, we try to quantify the correlation between poverty in certain countries and the social welfare system in those countries to have a basic knowledge on how effective the social programs are.
+
+
+2.Data Description and quality problem 
+We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scale of both social science and economy so that we could look into the properties of poverty in a broader scope. 
+
+- Data preparation  how did we modify the data to properly use it 
+
+
+#### Chapter 3 modelling and graphs
+-	Define a descriptive model for the relevant data (Visual graphs)
+-	Specify a prior distribution
+-	Use Bayesian inference to discuss credibility across parameter values
+
+First we explore our data, by analysing the data and to 
+
+
+3.1 Data analysis
+Within chapter 3, we try to answer our research question by means of several sub questions, see section 1.2. This is mainly done by analysing large datasets and trying to visualise this data by means of appropriate graphs. We try to gain more insight in the causes and effects of persistence of hunger in Sub Saharan Africa. These insights will then be used to advice some further steps take can be taken to start on working towards policies that counteract the rise of hunger in Sub Saharan Africa.
+
+Firstly, the current state of hunger in Sub Saharan Africa will be analysed by looking at the food deficit and the prevalence of undernourishment in Africa compared to the World and distribution of the PoU within countries in the Sub Saharan Africa region, see section 4.1. To answer the second research question, several bar charts are created that give an overview of the development of stunting, wasting overweight, anaemia and exclusive breastfeeding in the period of 2010 - 2017, see section 4.2. For the third research question, the cereal yield, population and food index have been analysed, see section 4.3. To answer the fourth research question, several regression analyses are carried out to analyse the development of natural hazards within Africa. A statistical analysis has been carried out to estimate the significance of environmental hazards on the PoU within low & middle-income countries, see section 4.4. Finally, in section 4.5 the future trend of the PoU for Sub Saharan Africa will be estimated and estimations about the future trend of environmental hazards and their impact on the food security shall be derived.  
+
+
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#selecting data from wdi + average of 6 years 2010 - 2015
+colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
+var_i = c("SI.POV.DDAY","SP.POP.TOTL")
+#subset the data with only the world and the two indicators above about population and people in poverty in %
+graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+graph_data = subset(graph_data,graph_data$'Year' %in% year)
+
+test <- subset(graph_data, select = c("Indicator.Code","Country.Name", "Country.Code", "Year", "value"))
+df_mean_pov = dcast(test,Country.Code + Country.Name + Indicator.Code ~ Year, value.var ="value")
+df_mean_pov['mean'] = rowMeans(df_mean_pov[,4:9],na.rm = T)
+df_mean_pov = dcast(df_mean_pov,Country.Code + Country.Name  ~ Indicator.Code, value.var ="mean")
+colnames(df_mean_pov) = c("Country.Code","Country.Name","MeanHeadCount","MeanPop")
+df_mean_pov$MeanPop = df_mean_pov$MeanPop/1000000
+df_mean_pov$MeanHeadCount = df_mean_pov$MeanHeadCount/100
+df_mean_pov['MeanPovPop'] = df_mean_pov[,3]*df_mean_pov[,4]
+df_mean_pov$MeanHeadCount = df_mean_pov$MeanHeadCount*100
+df_mean_pov$MeanPop = round(df_mean_pov$MeanPop,2)
+df_mean_pov$MeanHeadCount = round(df_mean_pov$MeanHeadCount,2)
+df_mean_pov$MeanPovPop = round(df_mean_pov$MeanPovPop,2)
+
+
+# light grey boundaries
+l <- list(color = toRGB("grey"), width = 0.5)
+
+df_mean_pov$hover <- with(df_mean_pov, paste
+                                     ( "Year: 2015",'<br>',
+                                       "Percentage under extreme poverty line:",MeanHeadCount,"%" ,'<br>',
+                                       "Mean population living in extreme poverty:",MeanPovPop,"M",'<br>',
+                                       "Total population:",MeanPop,"M",'<br>', 
+                                       "Country:", Country.Name))
+
+# specify map projection/options
+g <- list(
+  resolution = 5,
+  showcoastlines = T,
+  countrycolor = toRGB("grey"),
+  coastlinecolor = toRGB("grey"),
+  projection = list(type = 'Mercator') 
+)
+
+k <- plot_geo(df_mean_pov) %>%
+  add_trace(z = ~MeanHeadCount,text = ~hover, color = ~MeanHeadCount, colors= 'Reds', 
+            locations = ~Country.Code, 
+            marker = list(line = l,color = 'rgb(255,255,255)')) %>%
+  
+  colorbar(title = 'Percentage of total population living extreme poverty') %>%
+  layout(
+    title = 'Prevalance of Extreme Poverty during 2010 - 2015 (below 1.90$ a day)',
+    geo = g )
+k
+
+
+
+
+
+```
+```
+#### Chapter 4 evaluation
+- evaluation
+-	Discuss research findings to quality of the model, quality of the data. 
+-	How could the model be improved  suggest next steps
+#### Chapter 5 development
+	- Can we predict future behaviour/Guide additional policy
+	- How would we communicate our findings to decision makers? 
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
