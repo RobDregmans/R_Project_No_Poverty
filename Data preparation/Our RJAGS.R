@@ -1,9 +1,9 @@
 #selecting data from wdi
 colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
-var_correlation = c("SI.POV.DDAY","SP.DYN.LE00.IN","SN.ITK.DEFC.ZS","SH.DYN.MORT")
+var_jags = c("SI.POV.DDAY","SP.DYN.LE00.IN","SN.ITK.DEFC.ZS","SH.DYN.MORT")
 
 #subset the data with only the world and the two indicators above about population and people in poverty in %
-jags_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_correlation)
+jags_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_jags)
 jags_data = subset(jags_data, select = c("Indicator.Code","Country.Name", "Country.Code", "Year", "value"))
 jags_data = dcast(jags_data,Country.Code + Country.Name + Year ~ Indicator.Code, value.var ="value")
 df_jags_year = subset(jags_data, jags_data$Year==2012)
@@ -96,9 +96,8 @@ n <- nrow(df_jags_year)
 intercept <- rep(1,n)
 # bind your data together in the order used for modelling
 data <- cbind(intercept,y1,y2,y3)
-aaaa <- t(data)
-tada <- param %*% t(data)
-pred <- t(tada)
+pred <- param %*% t(data)
+pred <- t(pred)
 # replicate the results
 act <- rep(x,100)
 par(mar=c(1,1,1,1))
