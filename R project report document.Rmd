@@ -6,7 +6,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "C:/Users/Rob/Documents/GitHub/data")
+knitr::opts_knit$set(root.dir = "C:/Users/ivarnieuwepc/Documents/GitHub/data")
 knitr::opts_chunk$set(comment=NA, fig.width=15, fig.height=15, fig.align = "center")
 library(reshape)
 library(reshape2)
@@ -137,7 +137,6 @@ mydata_utf8 = read.table("WDI/WDIData.csv",sep=",",fileEncoding="UTF-8-BOM",head
 # drop off the final blank column
 mydata = mydata_utf8[,1:62]
 
-dim(mydata)
 all_code = unique(mydata[,1:2])
 all_var = unique(mydata[,3:4])
 
@@ -148,8 +147,7 @@ all_var = unique(mydata[,3:4])
 Grouping_variables_population = list("SE.XPD.TOTL.GD.ZS","P.DYN.LE00.IN","SI.POV.NAGP","SP.DYN.LE00.IN","SE.XPD.TOTL.GD.ZS","SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN","SP.URB.TOTL.IN.ZS", "SI.POV.URHC", "SP.RUR.TOTL.ZS", "SI.POV.RUHC", "SI.POV.DDAY", "SP.POP.TOTL")
 
 
-Target_1_Headcount_Poverty_190_320_550 = list("SI.POV.DDAY","SI.POV.LMIC,SI.POV.UMIC","SI.POV.GAPS,SI.POV.LMIC.GP",
-                                              "SI.POV.UMIC.GP")
+Target_1_Headcount_Poverty_190_320_550 = list("SI.POV.DDAY","SI.POV.LMIC,SI.POV.UMIC","SI.POV.GAPS","SI.POV.LMIC.GP","SI.POV.UMIC.GP")
 
 Target_2_National_Poverty_Lines_Indicator = list("SI.POV.NAHC","SI.POV.RUHC","SI.POV.URHC","SI.POV.NAGP","SI.POV.RUGP",
                                               "SI.POV.URGP")
@@ -208,77 +206,58 @@ indicator_data = subset(mydata,mydata$Indicator.Code %in% my_vars_c)
 indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
 colnames(indicator_data_1990_2015) <- sub("X", "", colnames(indicator_data_1990_2015))
 
-our_indicator_data= melt(indicator_data_1990_2015, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
+our_indicator_data= melt(indicator_data_1990_2015,id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
 #setting up indicator data with country names from python @martijn
 country_names = read.table("country_names.csv",sep = ",", header = TRUE)
 country_wdi = country_names[,c(1:2,5:5)]
 
 colnames(country_wdi) = c("Country.Code","Region","Region/Country Name")
 our_indicator_data = merge(country_wdi,our_indicator_data,id = "Country.Code")
-colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year","Value")
+colnames(our_indicator_data)=c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year","Value")
 
-#Obtaining lists for information about regions & countries
+#Obtaining lists for information about regions and countries
 all_region_and_country_codes=our_indicator_data[,1:3]
 all_region_and_country_codes=unique(all_region_and_country_codes)
 all_regions = subset(all_region_and_country_codes, all_region_and_country_codes$Region == "")
 all_countries = subset(all_region_and_country_codes, all_region_and_country_codes$Region != "")
 
-#did a work around because factor levels in R are stupid
+#did a work around because factor levels in R
 general_regions = unique(all_countries['Region'])
 region_list = c('Latin America & Caribbean','South Asia','Sub-Saharan Africa','Europe & Central Asia','Middle East & North Africa','East Asia & Pacific','North America')
 
 #Subset to extract regions
 regions_used = subset(all_regions, all_regions$'Region/Country Name' %in% region_list)
 regions_used = regions_used[,-c(2)]
-
-#FOR THE LINECHART ABOUT ABSOLUTE POVERTY
-world = c("WLD")
-var_i = c("SI.POV.DDAY", "SP.POP.TOTL")
-#subset the data with only the world and the two indicators above about population and people in poverty in %
-graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
-graph_data = subset(graph_data,graph_data$'Country.Code' %in% world)
-#split the indicator column into two columns
-wide = dcast(graph_data, Indicator.Name + Country.Code + Year ~ Indicator.Code,  value.var = "Value" , fun.aggregate = mean, na.rm = T)
-#this is a workaround for getting for each year the value for the two indicators into the same row
-new1 <- wide[order(wide$SP.POP.TOTL),]
-pop <- new1[1:26,]
-new2 <- wide[order(wide$SI.POV.DDAY),]
-si<-subset(new2,new2$SI.POV.DDAY != "NaN") 
-si2 <-subset(si, select=c("SI.POV.DDAY", "Year"))
-pop <- subset(pop, select = -SI.POV.DDAY )
-wide = merge(pop,si2,id = "Year")
-#omit all na values
-wide <- na.omit(wide)
-#divide the percentage indicator by 100 to get it scaled between 0 and 1
-wide$SI.POV.DDAY <- wide$SI.POV.DDAY/100
-#multiply the data to get the absolute number of people living in poverty
-wide$absolute <- wide$SI.POV.DDAY * wide$SP.POP.TOTL
+```
+Generating used data for Linechart about poverty
+```{r}
 
 #CODE FOR THE GINI INDICES
-# indicator code for gini index
-my_vars_c = c("SI.POV.GINI")
-# subset the data - selected var 
-indicator_datagini = subset(indicator_data,indicator_data$Indicator.Code %in% my_vars_c)
+# subset the data - selected var GINI
+indicator_datagini = subset(indicator_data,indicator_data$Indicator.Code=="SI.POV.GINI")
 
 # LINE PLOT FOR THE COUNTRIES WITH THE HIGHEST GINI INDEXES
 # extract the right years (25:60 is 1980 till 2015)
-id = indicator_datagini[,c(1:3,4:4, 25:60)]
+id = indicator_datagini[,c(2:3,4:4, 25:60)]
 # remove the 'X' in the columns
 colnames(id) <- sub("X", "", colnames(id))
 # change the format
-idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code", "Country.Name"), value.name = "Year")
+idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
 # throw away the rows with missing data
 idm <- na.omit(idm, cols="value")
+```
 
+
+
+```{r}
 #CODE FOR MAKING THE BUBBLE CHART OF POVERTY AND SPENDINGS ON EDUCATION
 #making bubble chart of poverty 3.10 and life expectancy
-colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
 var_i = c("SE.XPD.TOTL.GD.ZS","SI.POV.DDAY","SP.POP.TOTL")
 
 #subset the data with only the world and the two indicators above about population and people in poverty and life expectancy
-graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
-test <- subset(graph_data, select = c("Indicator.Code","Region", "Country.Name", "Country.Code", "Year", "value"))
-df_bubble = dcast(test,Country.Code + Country.Name + Region + Year ~ Indicator.Code, value.var ="value")
+bubble_chart_1 = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+test <- subset(bubble_chart_1, select = c("Indicator.Code","Region", "Country.Name", "Country.Code", "Year", "Value"))
+df_bubble = dcast(test,Country.Code + Country.Name + Region + Year ~ Indicator.Code, value.var ="Value")
 df_bubble_2013 = df_bubble[which(df_bubble$Year == 2012),]
 df_bubble_2013$SP.POP.TOTL = df_bubble_2013$SP.POP.TOTL/1000000
 df_bubble_2013$SI.POV.DDAY = df_bubble_2013$SI.POV.DDAY/100
@@ -301,15 +280,13 @@ df_bubble_2013_na_se$TotalPopPov = round(df_bubble_2013_na_se$TotalPopPov,2)
 df_bubble_2013_na_se$EduSpending = round(df_bubble_2013_na_se$EduSpending,2)
 
 #CODE FOR MAKING THE BUBBLE CHATY OF POVERTY AND LIFE EXPECTANCY
-#making bubble chart of poverty 3.10 and life expectancy
-colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
+#making bubble chart of poverty 1.90 and life expectancy
 var_i = c("SP.DYN.LE00.IN","SI.POV.DDAY","SP.POP.TOTL")
-
 
 #subset the data with only the world and the two indicators above about population and people in poverty and life expectancy
 graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
-test <- subset(graph_data, select = c("Indicator.Code","Region", "Country.Name", "Country.Code", "Year", "value"))
-df_bubble = dcast(test,Country.Code + Country.Name + Region + Year ~ Indicator.Code, value.var ="value")
+test <- subset(graph_data, select = c("Indicator.Code","Region", "Country.Name", "Country.Code", "Year", "Value"))
+df_bubble = dcast(test,Country.Code + Country.Name + Region + Year ~ Indicator.Code, value.var ="Value")
 df_bubble_2013 = df_bubble[which(df_bubble$Year == 2012),]
 df_bubble_2013$SP.POP.TOTL = df_bubble_2013$SP.POP.TOTL/1000000
 df_bubble_2013$SI.POV.DDAY = df_bubble_2013$SI.POV.DDAY/100
@@ -317,9 +294,9 @@ df_bubble_2013$TotalPopPov = df_bubble_2013$SI.POV.DDAY * df_bubble_2013$SP.POP.
 
 colnames(df_bubble_2013) = c("Country.Code", "Country.Name","Region","Year","Poverty","LifeExpec","TotalPop","TotalPopPov")
 
-#omit NA's
+#omit NA
 df_bubble_2013_na = na.omit(df_bubble_2013)
-#order to omit regions, only hold countries
+#order to omit regions only hold countries
 df_bubble_2013_na = df_bubble_2013_na[order(df_bubble_2013_na$Region, df_bubble_2013_na$Country.Name),]
 x = as.numeric(dim(df_bubble_2013_na))
 k = x[1]
@@ -331,22 +308,7 @@ df_bubble_2013_na$TotalPop = round(df_bubble_2013_na$TotalPop,2)
 df_bubble_2013_na$TotalPopPov = round(df_bubble_2013_na$TotalPopPov,2)
 df_bubble_2013_na$LifeExpec = round(df_bubble_2013_na$LifeExpec,2)
 
-#CODE FOR STACKED GRAPH
-poverty_gap_data <- subset(mydata,mydata$Indicator.Code=="SI.POV.GAPS")
-poverty_gap_data_1990 <- poverty_gap_data[,c(1:3,4:4, 35:60)]
-# remove the 'X' in the columns
-colnames(poverty_gap_data_1990) <- sub("X", "", colnames(poverty_gap_data_1990))
-#remove the rows without any data
-poverty_gap_withoutNA <- poverty_gap_data_1990[-which(rowSums(is.na(poverty_gap_data_1990))>24),]
-#reshape the data for drawing graphs
-poverty_melt = melt(poverty_gap_withoutNA, id=c("Indicator.Code","Indicator.Name","Country.Code", "Country.Name"), value.name = "Year")
-#stacked area graph
-##poverty line $1.90, six regions in one graph
-regions_melt <- subset(poverty_melt, Country.Name =="East Asia & Pacific" | Country.Name =="Europe & Central Asia"| Country.Name =="Latin America & Caribbean"| Country.Name =="Middle East & North Africa"| Country.Name =="South Asia"| Country.Name =="Sub-Saharan Africa")
-
 ```
-
-
 
 #### Chapter 3 modelling and graphs
 -	Define a descriptive model for the relevant data (Visual graphs)
@@ -364,6 +326,27 @@ Within chapter 3, we try to answer our research question by means of several sub
 3.1 The state of poverty in the world
 The code below plots the absolute number op people living in poverty (below 1.90$ a day) over the years 1980 till 2015
 ```{r}
+#FOR THE LINECHART ABOUT ABSOLUTE POVERTY
+world = c("WLD")
+var_i = c("SI.POV.DDAY", "SP.POP.TOTL")
+#subset the data with only the world and the two indicators above about population and people in poverty in %
+graph_absolute = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+graph_absolute = subset(graph_absolute,graph_absolute$'Country.Code' %in% world)
+graph_absolute = graph_absolute[,c(4:7)]
+#split the indicator column into two columns
+wide = dcast(graph_absolute,Year ~ Indicator.Code,  value.var = "Value")
+#this is a workaround for getting for each year the value for the two indicators into the same row
+#omit all na values
+wide <- na.omit(wide)
+
+#multiply the data to get the absolute number of people living in poverty
+wide$absolute <- (wide$SI.POV.DDAY/100) * (wide$SP.POP.TOTL/(10^9))
+wide$absolute = round(wide$absolute,3)
+
+#add hover text
+wide$hover = with(wide, paste( "Year:", Year ,
+                               "<br> World population living in extreme povert:",absolute,"M",
+                               "<br> Share of global population:", SI.POV.DDAY,"%"))
 #layout
 a <- list(
   title = "Years",
@@ -371,39 +354,41 @@ a <- list(
   gridwidth = 2,
   autotick = F, 
   dtick = 2,
-  range = c(0,25)
+  range = c(0,25),
+  showline = T
 )
 b <- list(
   title = "Number of people living in poverty (1,90$ a day)",
   showticklabels = TRUE,
   gridwidth = 2,
-  range = c(-5000000,2000000000),
   showline = T
 )
 #plot the graph
-plot_ly(wide, x = ~Year, y = ~absolute, type = 'scatter', mode = 'lines') %>% 
-  layout(xaxis = a, yaxis = b)
+plot_ly(wide, x = ~Year, y = ~absolute, text = ~hover ,type = 'scatter', mode = 'lines') %>% 
+  layout(xaxis = a, yaxis = b, title = 'Global population living in extreme poverty 1990 - 2015')
 ```
 
-```
-```{r}
+``` {r}
 knitr::opts_chunk$set(echo = TRUE)
-#selecting data from wdi + average of 6 years 2010 - 2015
-colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
-var_i = c("SI.POV.DDAY","SP.POP.TOTL")
-#subset the data with only the world and the two indicators above about population and people in poverty in %
-graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
-graph_data = subset(graph_data,graph_data$'Year' %in% Year)
 
-test <- subset(graph_data, select = c("Indicator.Code","Country.Name", "Country.Code", "Year", "value"))
-df_mean_pov = dcast(test,Country.Code + Country.Name + Indicator.Code ~ Year, value.var ="value")
+#selecting data from wdi + average of 6 years 2010 - 2015
+var_i = c("SI.POV.DDAY","SP.POP.TOTL")
+year = c('2010','2011', '2012','2013','2014','2015')
+
+#subset the data with only the world and the two indicators above about population and people in poverty
+geo_map_average = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+geo_map_average = subset(geo_map_average,geo_map_average$Year %in% year)
+geo_map_average <- subset(geo_map_average, select = c("Indicator.Code","Country.Name", "Country.Code", "Year", "Value"))
+
+#Calculate average over columns
+df_mean_pov = dcast(geo_map_average,Country.Code + Country.Name + Indicator.Code ~ Year, value.var ="Value")
 df_mean_pov['mean'] = rowMeans(df_mean_pov[,4:9],na.rm = T)
 df_mean_pov = dcast(df_mean_pov,Country.Code + Country.Name  ~ Indicator.Code, value.var ="mean")
 colnames(df_mean_pov) = c("Country.Code","Country.Name","MeanHeadCount","MeanPop")
+
+#fix indicator values for plotting and calculate poverty population
 df_mean_pov$MeanPop = df_mean_pov$MeanPop/1000000
-df_mean_pov$MeanHeadCount = df_mean_pov$MeanHeadCount/100
-df_mean_pov['MeanPovPop'] = df_mean_pov[,3]*df_mean_pov[,4]
-df_mean_pov$MeanHeadCount = df_mean_pov$MeanHeadCount*100
+df_mean_pov['MeanPovPop'] = df_mean_pov[,3]*(df_mean_pov[,4]/100)
 df_mean_pov$MeanPop = round(df_mean_pov$MeanPop,2)
 df_mean_pov$MeanHeadCount = round(df_mean_pov$MeanHeadCount,2)
 df_mean_pov$MeanPovPop = round(df_mean_pov$MeanPovPop,2)
@@ -424,8 +409,7 @@ g <- list(
   showcoastlines = T,
   countrycolor = toRGB("grey"),
   coastlinecolor = toRGB("grey"),
-  projection = list(type = 'Mercator') 
-)
+  projection = list(type = 'Mercator'))
 
 k <- plot_geo(df_mean_pov) %>%
   add_trace(z = ~MeanHeadCount,text = ~hover, color = ~MeanHeadCount, colors= 'Reds', 
@@ -433,11 +417,8 @@ k <- plot_geo(df_mean_pov) %>%
             marker = list(line = l,color = 'rgb(255,255,255)')) %>%
   
   colorbar(title = 'Percentage of total population living extreme poverty') %>%
-  layout(
-    title = 'Prevalance of Extreme Poverty during 2010 - 2015 (below 1.90$ a day)',
-    geo = g )
+  layout(title = 'Prevalance of Extreme Poverty during 2010 - 2015 (below 1.90$ a day)',geo = g)
 k
-```
 ```
 
 
@@ -458,7 +439,7 @@ pline <- plot_ly(idmc, x = ~idmc$variable, y = ~idmc$value, color = ~idmc$Countr
 pline
 ```
 
-Below is the code for the lorenzcurve of the countrie with the lowest Gini Index. The lorenzcurve shows the distribution of wealth between the people in a country. Every Lorenzcurve has it own gini score. The more away the lorenzcurve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed.
+Below is the code for the lorenzcurve of the countrie with the lowest Gini Index. The lorenzcurve shows the distribution of wealth between the people in a country. Every Lorenzcurve has it own gini score. The more away the lorenzcurve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed.ADD COUNTRY NAME IN TITLE
 
 ```{r}
 # PLOT THE LORENZ CURVE OF ONE OF THE COUNTRIES (if a flat line occurs, there is no data)
@@ -552,8 +533,19 @@ p
 ```
 code for stacked graph
 ```{r}
-gg <- ggplot(regions_melt, aes(x=as.numeric(as.character(variable)), y=value))
+library(ggplot2)
+
+#CODE FOR STACKED GRAPH
+poverty_gap_data <- subset(our_indicator_data,our_indicator_data$Indicator.Code=="SI.POV.GAPS")
+#remove the rows without any data
+poverty_gap_withoutNA <- poverty_gap_data[-which(rowSums(is.na(poverty_gap_data))>0),]
+##poverty line $1.90, six regions in one graph
+regions_melt <- subset(poverty_gap_withoutNA, Country.Name =="East Asia & Pacific" | Country.Name =="Europe & Central Asia"| Country.Name =="Latin America & Caribbean"| Country.Name =="Middle East & North Africa"| Country.Name =="South Asia"| Country.Name =="Sub-Saharan Africa")
+
+
+gg <- ggplot(regions_melt, aes(x=Year, y=Value))
 gg <- gg + geom_area(aes(fill=Country.Name))
+
 #the color of the stacked area
 gg = gg + scale_fill_brewer(palette="Greens", breaks=rev(levels(regions_melt$Country.Name)))
 #label name
@@ -562,7 +554,7 @@ gg <- gg + labs(x="Year", y="Poverty ratio",col="Regions")
 gg <- gg + guides(fill = guide_legend(title = "Region"))
 #remove the background and grid
 gg <- gg + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-                              panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+                              panel.grid.minor = element_blank(), axis.line = element_line(colour ="black"))
 gg
 
 ```
