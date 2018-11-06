@@ -1,13 +1,19 @@
 #selecting data from wdi
-colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
 var_jags = c("SI.POV.DDAY","SP.DYN.LE00.IN","SN.ITK.DEFC.ZS","SH.DYN.MORT")
 
 #subset the data with only the world and the two indicators above about population and people in poverty in %
 jags_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_jags)
-jags_data = subset(jags_data, select = c("Indicator.Code","Country.Name", "Country.Code", "Year", "value"))
-jags_data = dcast(jags_data,Country.Code + Country.Name + Year ~ Indicator.Code, value.var ="value")
+jags_data = subset(jags_data, select = c("Indicator.Code","Region","Country.Name", "Country.Code", "Year", "Value"))
+jags_data = dcast(jags_data,Country.Code + Region + Country.Name + Year ~ Indicator.Code, value.var ="Value")
 df_jags_year = subset(jags_data, jags_data$Year==2012)
 df_jags_year = df_jags_year[-which(rowSums(is.na(df_jags_year))> 0),]
+
+#order to omit regions, only hold countries
+df_jags_yearNA = df_jags_year[order(df_jags_year$Region,df_jags_year$Country.Name),]
+x = as.numeric(dim(df_jags_yearNA))
+k = x[1]
+df_jags_yearNA = df_jags_yearNA[c(13:k),]
+
 
 poverty = df_jags_year$SI.POV.DDAY
 life_expacteny = df_jags_year$SP.DYN.LE00.IN

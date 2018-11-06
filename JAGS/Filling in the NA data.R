@@ -1,18 +1,20 @@
 #selecting data from wdi
 colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
-var_correlation = c("SP.DYN.LE00.IN","SN.ITK.DEFC.ZS","SH.DYN.MORT")
+var_predict = c("SP.DYN.LE00.IN","SN.ITK.DEFC.ZS","SH.DYN.MORT")
+
+var_correlation = c("SI.POV.DDAY","SP.DYN.LE00.IN","SN.ITK.DEFC.ZS","SH.DYN.MORT")
 
 #subset the data with only the world and the two indicators above about population and people in poverty in %
-correlation_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_correlation)
-correlation_data = subset(correlation_data, select = c("Indicator.Code","Country.Name", "Country.Code", "Year", "value"))
-correlation_data = dcast(correlation_data,Country.Code + Country.Name + Year ~ Indicator.Code, value.var ="value")
-df_correlation_year = subset(correlation_data, correlation_data$Year==2012)
-df_correlation_year = df_correlation_year[-which(rowSums(is.na(df_correlation_year))> 0),]
+predict_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_predict)
+predict_data = subset(predict_data, select = c("Indicator.Code", "Country.Code", "Year", "Value"))
+predict_data = dcast(predict_data,Country.Code + Year ~ Indicator.Code, value.var ="Value")
+df_predict_year = subset(predict_data, predict_data$Year==2012)
+df_predict_year = df_predict_year[-which(rowSums(is.na(df_predict_year))> 0),]
 
-life_expacteny2 = df_correlation_year$SP.DYN.LE00.IN
-undernourishment2 = df_correlation_year$SN.ITK.DEFC.ZS
-child_mortality2 = df_correlation_year$SH.DYN.MORT
-n2 <- nrow(df_correlation_year)
+life_expacteny2 = df_predict_year$SP.DYN.LE00.IN
+undernourishment2 = df_predict_year$SN.ITK.DEFC.ZS
+child_mortality2 = df_predict_year$SH.DYN.MORT
+n2 <- nrow(df_predict_year)
 
 y21 <- life_expacteny
 y22 <- undernourishment
