@@ -56,3 +56,4 @@ samp <- coda.samples(model,
                      n.iter=20000, progress.bar="text")
 
 summary(samp)
+saveRDS(samp,"example.rds")
