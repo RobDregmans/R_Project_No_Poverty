@@ -16,6 +16,6 @@ b <- list(
   showline = T
 )
 #plot the graph
-plot_ly(wide, x = ~variable, y = ~absolute, type = 'scatter', mode = 'lines') %>% 
+plot_ly(wide, x = ~Year, y = ~absolute, type = 'scatter', mode = 'lines') %>% 
   layout(xaxis = a, yaxis = b)
 

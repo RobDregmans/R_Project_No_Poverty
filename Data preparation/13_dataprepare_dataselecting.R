@@ -84,7 +84,7 @@ country_wdi = country_names[,c(1:2,5:5)]
 
 colnames(country_wdi) = c("Country.Code","Region","Region/Country Name")
 our_indicator_data = merge(country_wdi,our_indicator_data,id = "Country.Code")
-colnames(our_indicator_data) = c("Country Code","Region","Region/Country Name","Indicator Code","Indicator Name","Year","Value")
+colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year","Value")
 
 #Obtaining lists for information about regions & countries
 all_region_and_country_codes=our_indicator_data[,1:3]
@@ -101,24 +101,21 @@ regions_used = subset(all_regions, all_regions$'Region/Country Name' %in% region
 regions_used = regions_used[,-c(2)]
 
 #FOR THE LINECHART ABOUT ABSOLUTE POVERTY
-library(reshape)
-library(reshape2)
-
 world = c("WLD")
 var_i = c("SI.POV.DDAY", "SP.POP.TOTL")
 #subset the data with only the world and the two indicators above about population and people in poverty in %
 graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
 graph_data = subset(graph_data,graph_data$'Country.Code' %in% world)
 #split the indicator column into two columns
-wide = dcast(graph_data, Indicator.Name + Country.Code + variable ~ Indicator.Code,  value.var = "value" , fun.aggregate = mean, na.rm = T)
+wide = dcast(graph_data, Indicator.Name + Country.Code + Year ~ Indicator.Code,  value.var = "Value" , fun.aggregate = mean, na.rm = T)
 #this is a workaround for getting for each year the value for the two indicators into the same row
 new1 <- wide[order(wide$SP.POP.TOTL),]
 pop <- new1[1:26,]
 new2 <- wide[order(wide$SI.POV.DDAY),]
 si<-subset(new2,new2$SI.POV.DDAY != "NaN") 
-si2 <-subset(si, select=c("SI.POV.DDAY", "variable"))
+si2 <-subset(si, select=c("SI.POV.DDAY", "Year"))
 pop <- subset(pop, select = -SI.POV.DDAY )
-wide = merge(pop,si2,id = "variable")
+wide = merge(pop,si2,id = "Year")
 #omit all na values
 wide <- na.omit(wide)
 #divide the percentage indicator by 100 to get it scaled between 0 and 1
