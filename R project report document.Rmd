@@ -135,11 +135,9 @@ To deal with the problem, …
 
 
 - Data preparation  how did we modify the data to properly use it 
-
-1.Loading, choosing data we need and merging
+1.loading, choosing data we need and merging
 Here we make a list of name of data in the fields that we are interested in, merge them in to one single longer list and make a subset of the data we want.
 
-```{r}
 # Read the data in correctly
 mydata_utf8 = read.table("WDI/WDIData.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
 
@@ -203,10 +201,8 @@ for (i in List_of_indicators_list ) {
 }
 my_vars_c = c(my_vars)
 
-```
 
-
-2.Reshaping our data
+2.reshape/melt
 But for purpose of easier use, we reshape the data into the format that in each row, there’s one value of an indicator in one country of one year, with the columns of country code, region, country name, indicator code, indicator name, year, and the value. Also we delete the “X” in the name of years.
 ```{r}
 # subset the data - selected var with all years
