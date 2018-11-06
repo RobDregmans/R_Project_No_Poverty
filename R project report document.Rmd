@@ -3,8 +3,17 @@ title: "R Project Report"
 output: html_document
 ---
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "C:/Users/Rob/Documents/GitHub/data")
+library(reshape)
+library(reshape2)
+library(dplyr)
+library(tidyr)
+library(plotly)
+library(ineq)
+library(ggplot2)
 ```
 
 ### Report storyline
@@ -109,20 +118,246 @@ First, we narrow down the scope of indicators of the following fields that might
 
 Secondly, we choose to start our analysis in a world level to have a first sight into the data, and then focus on some certain countries with data in relatively abnormal trend. 
 
-Thirdly, we use the data from 1990 to 2015. The number of people living in extreme poverty dropped by more than half between 1990 and 2015. We want to find out the exact trend of how poverty has changed in the word thought out that period. Further more, we try to quantify the correlation between poverty in certain countries and the social welfare system in those countries to have a basic knowledge on how effective the social programs are.
+Thirdly, we use the data from 1990 to 2015. The number of people living in extreme poverty dropped by more than half between 1990 and 2015. We want to find out the exact trend of how poverty has changed in the word thought out that period. Further more, we try to quantify the correlation between poverty in certain countries and the social welfare system in those countries to have a basic knowledge on how effective the social programs are. 
 
+Last, we want to predict the missing data on poverty with our regression model using predictors of life expectancy, education, and mortality of infants, and with the data we will get a fuller picture of how the poverty will be reduced in the future.
 
 2.Data Description and quality problem 
-We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scale of both social science and economy so that we could look into the properties of poverty in a broader scope. 
+We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis that social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scales of both social science and economy so that we could look into the properties of poverty with a broader scope. 
+*Missing part: Quantity of the data:*
+But in the indicators we choose, a lot of data is missing. We have two solutions on the missing data. Strategy one is to drop off the data with a lot of missing part. The other way is more…
+*What do we do with the missing data:*
+For the world map, 
 
+Also, we try to make a multiple regression model based on Baye’s rule using the predictors we choose, again within the predictors there are lot of missing data(i.e. NA in the predictor education). *how many missing data are there*
+To deal with the problem, …
 - Data preparation  how did we modify the data to properly use it 
+1.Loading, choosing data we need and merging
+Here we make a list of name of data in the fields that we are interested in, merge them in to one single longer list and make a subset of the data we want.
+
+```{r}
+# Read the data in correctly
+mydata_utf8 = read.table("WDI/WDIData.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
+
+# drop off the final blank column
+mydata = mydata_utf8[,1:62]
+
+dim(mydata)
+all_code = unique(mydata[,1:2])
+all_var = unique(mydata[,3:4])
+
+# use the right countries
+#country_code = read.table("data/WDI/country_code.csv",sep=",",header=FALSE)  
+# listing all our variables and group them by UN targets or characteristics
+
+Grouping_variables_population = list("SE.XPD.TOTL.GD.ZS","P.DYN.LE00.IN","SI.POV.NAGP","SP.DYN.LE00.IN","SE.XPD.TOTL.GD.ZS","SP.RUR.TOTL.ZS","SP.POP.GROW","SP.POP.TOTL","SP.POP.TOTL.MA.IN","SP.POP.TOTL.FE.IN","SP.URB.TOTL.IN.ZS", "SI.POV.URHC", "SP.RUR.TOTL.ZS", "SI.POV.RUHC", "SI.POV.DDAY", "SP.POP.TOTL")
+
+
+Target_1_Headcount_Poverty_190_320_550 = list("SI.POV.DDAY","SI.POV.LMIC,SI.POV.UMIC","SI.POV.GAPS,SI.POV.LMIC.GP",
+                                              "SI.POV.UMIC.GP")
+
+Target_2_National_Poverty_Lines_Indicator = list("SI.POV.NAHC","SI.POV.RUHC","SI.POV.URHC","SI.POV.NAGP","SI.POV.RUGP",
+                                              "SI.POV.URGP")
+
+Target_3_A_Social_insurance_programm = list("per_si_allsi.cov_pop_tot",
+                                         "per_si_allsi.cov_q2_tot",
+                                         "per_si_allsi.cov_q3_tot",
+                                         "per_si_allsi.cov_q4_tot",
+                                         "per_si_allsi.cov_q1_tot",
+                                         "per_si_allsi.cov_q5_tot",
+                                         "per_allsp.cov_pop_tot")
+
+Target_3_B_Social_Safety_Net_programm = list("per_sa_allsa.cov_pop_tot",
+                                          "per_sa_allsa.cov_q2_tot",
+                                          "per_sa_allsa.cov_q3_tot",
+                                          "per_sa_allsa.cov_q4_tot",
+                                          "per_sa_allsa.cov_q1_tot",
+                                          "per_sa_allsa.cov_q5_tot")
+
+Target_3_C_Social_Safety_Net_programm = list("per_lm_alllm.cov_pop_tot",
+                                          "per_lm_alllm.cov_q2_tot",
+                                          "per_lm_alllm.cov_q3_tot",
+                                          "per_lm_alllm.cov_q4_tot",
+                                          "per_lm_alllm.cov_q1_tot",
+                                          "per_lm_alllm.cov_q5_tot")
+
+indicators_income_share = list("SI.DST.04TH.20","SI.DST.10TH.10","SI.DST.05TH.20","SI.DST.FRST.10",
+                            "SI.DST.FRST.20","SI.DST.02ND.20","SI.DST.03RD.20")
+
+indicators_economy = list("NY.GNP.PCAP.CD","NY.GNP.MKTP.CN","FP.CPI.TOTL.ZG","NY.GDP.DEFL.KD.ZG","NY.GDP.DEFL.KD.ZG.AD",
+                       "TX.VAL.MRCH.CD.WT","TX.VAL.MRCH.WL.CD","TM.VAL.MRCH.CD.WT","TM.VAL.MRCH.WL.CD","SI.POV.GINI")
+
+indicators_life_span = list("SH.DTH.IMRT","SP.DTH.INFR.ZS","SP.DTH.INFR.ZS","SP.DYN.TO65.FE.ZS","SP.DYN.TO65.MA.ZS",
+                         "SP.DYN.IMRT.IN","SP.DYN.IMRT.FE.IN","SP.DYN.IMRT.MA.IN")
+
+#putting all indicators names in one list to merge all lists with a loop, see below
+List_of_indicators_list = list(indicators_life_span,indicators_economy,indicators_income_share, Target_3_C_Social_Safety_Net_programm,Target_3_B_Social_Safety_Net_programm,Target_3_A_Social_insurance_programm,Target_2_National_Poverty_Lines_Indicator,Target_1_Headcount_Poverty_190_320_550,Grouping_variables_population)
+
+my_vars = list()
+for (i in List_of_indicators_list ) {
+  my_vars = append(my_vars,i)
+}
+my_vars_c = c(my_vars)
+
+```
+
+2.Reshaping
+But for purpose of easier use, we reshape the data into the format that in each row, there’s one value of an indicator in one country of one year, with the columns of country code, region, country name, indicator code, indicator name, year, and the value. Also we delete the “X” in the name of years.
+
+```{r}
+# subset the data - selected var with all years
+#country_data = subset(mydata,mydata$Country.Code %in% country_code$V1)
+indicator_data = subset(mydata,mydata$Indicator.Code %in% my_vars_c)
+
+# subset the data - selected var with only 1990 - 2015 & prepare data for plotting
+indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
+colnames(indicator_data_1990_2015) <- sub("X", "", colnames(indicator_data_1990_2015))
+
+our_indicator_data= melt(indicator_data_1990_2015, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
+#setting up indicator data with country names from python @martijn
+country_names = read.table("country_names.csv",sep = ",", header = TRUE)
+country_wdi = country_names[,c(1:2,5:5)]
+
+colnames(country_wdi) = c("Country.Code","Region","Region/Country Name")
+our_indicator_data = merge(country_wdi,our_indicator_data,id = "Country.Code")
+colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year","Value")
+
+#Obtaining lists for information about regions & countries
+all_region_and_country_codes=our_indicator_data[,1:3]
+all_region_and_country_codes=unique(all_region_and_country_codes)
+all_regions = subset(all_region_and_country_codes, all_region_and_country_codes$Region == "")
+all_countries = subset(all_region_and_country_codes, all_region_and_country_codes$Region != "")
+
+#did a work around because factor levels in R are stupid
+general_regions = unique(all_countries['Region'])
+region_list = c('Latin America & Caribbean','South Asia','Sub-Saharan Africa','Europe & Central Asia','Middle East & North Africa','East Asia & Pacific','North America')
+
+#Subset to extract regions
+regions_used = subset(all_regions, all_regions$'Region/Country Name' %in% region_list)
+regions_used = regions_used[,-c(2)]
+
+#FOR THE LINECHART ABOUT ABSOLUTE POVERTY
+world = c("WLD")
+var_i = c("SI.POV.DDAY", "SP.POP.TOTL")
+#subset the data with only the world and the two indicators above about population and people in poverty in %
+graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+graph_data = subset(graph_data,graph_data$'Country.Code' %in% world)
+#split the indicator column into two columns
+wide = dcast(graph_data, Indicator.Name + Country.Code + Year ~ Indicator.Code,  value.var = "Value" , fun.aggregate = mean, na.rm = T)
+#this is a workaround for getting for each year the value for the two indicators into the same row
+new1 <- wide[order(wide$SP.POP.TOTL),]
+pop <- new1[1:26,]
+new2 <- wide[order(wide$SI.POV.DDAY),]
+si<-subset(new2,new2$SI.POV.DDAY != "NaN") 
+si2 <-subset(si, select=c("SI.POV.DDAY", "Year"))
+pop <- subset(pop, select = -SI.POV.DDAY )
+wide = merge(pop,si2,id = "Year")
+#omit all na values
+wide <- na.omit(wide)
+#divide the percentage indicator by 100 to get it scaled between 0 and 1
+wide$SI.POV.DDAY <- wide$SI.POV.DDAY/100
+#multiply the data to get the absolute number of people living in poverty
+wide$absolute <- wide$SI.POV.DDAY * wide$SP.POP.TOTL
+
+#CODE FOR THE GINI INDICES
+# indicator code for gini index
+my_vars_c = c("SI.POV.GINI")
+# subset the data - selected var 
+indicator_datagini = subset(indicator_data,indicator_data$Indicator.Code %in% my_vars_c)
+
+# LINE PLOT FOR THE COUNTRIES WITH THE HIGHEST GINI INDEXES
+# extract the right years (25:60 is 1980 till 2015)
+id = indicator_datagini[,c(1:3,4:4, 25:60)]
+# remove the 'X' in the columns
+colnames(id) <- sub("X", "", colnames(id))
+# change the format
+idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code", "Country.Name"), value.name = "Year")
+# throw away the rows with missing data
+idm <- na.omit(idm, cols="value")
+
+#CODE FOR MAKING THE BUBBLE CHART OF POVERTY AND SPENDINGS ON EDUCATION
+#making bubble chart of poverty 3.10 and life expectancy
+colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
+var_i = c("SE.XPD.TOTL.GD.ZS","SI.POV.DDAY","SP.POP.TOTL")
+
+#subset the data with only the world and the two indicators above about population and people in poverty and life expectancy
+graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+test <- subset(graph_data, select = c("Indicator.Code","Region", "Country.Name", "Country.Code", "Year", "value"))
+df_bubble = dcast(test,Country.Code + Country.Name + Region + Year ~ Indicator.Code, value.var ="value")
+df_bubble_2013 = df_bubble[which(df_bubble$Year == 2012),]
+df_bubble_2013$SP.POP.TOTL = df_bubble_2013$SP.POP.TOTL/1000000
+df_bubble_2013$SI.POV.DDAY = df_bubble_2013$SI.POV.DDAY/100
+df_bubble_2013$TotalPopPov = df_bubble_2013$SI.POV.DDAY * df_bubble_2013$SP.POP.TOTL
+
+colnames(df_bubble_2013) = c("Country.Code", "Country.Name","Region","Year","EduSpending", "Poverty","TotalPop","TotalPopPov")
+
+#omit NA's
+df_bubble_2013_na = na.omit(df_bubble_2013)
+#order to omit regions, only hold countries
+df_bubble_2013_na = df_bubble_2013_na[order(df_bubble_2013_na$Region, df_bubble_2013_na$Country.Name),]
+x = as.numeric(dim(df_bubble_2013_na))
+k = x[1]
+df_bubble_2013_na_se = df_bubble_2013_na[c(13:k),]
+#fix values with to many decimals and poverty percentage value
+df_bubble_2013_na_se$Poverty = df_bubble_2013_na_se$Poverty *100
+df_bubble_2013_na_se$Poverty = round(df_bubble_2013_na_se$Poverty,2)
+df_bubble_2013_na_se$TotalPop = round(df_bubble_2013_na_se$TotalPop,2)
+df_bubble_2013_na_se$TotalPopPov = round(df_bubble_2013_na_se$TotalPopPov,2)
+df_bubble_2013_na_se$EduSpending = round(df_bubble_2013_na_se$EduSpending,2)
+
+#CODE FOR MAKING THE BUBBLE CHATY OF POVERTY AND LIFE EXPECTANCY
+#making bubble chart of poverty 3.10 and life expectancy
+colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
+var_i = c("SP.DYN.LE00.IN","SI.POV.DDAY","SP.POP.TOTL")
+
+
+#subset the data with only the world and the two indicators above about population and people in poverty and life expectancy
+graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
+test <- subset(graph_data, select = c("Indicator.Code","Region", "Country.Name", "Country.Code", "Year", "value"))
+df_bubble = dcast(test,Country.Code + Country.Name + Region + Year ~ Indicator.Code, value.var ="value")
+df_bubble_2013 = df_bubble[which(df_bubble$Year == 2012),]
+df_bubble_2013$SP.POP.TOTL = df_bubble_2013$SP.POP.TOTL/1000000
+df_bubble_2013$SI.POV.DDAY = df_bubble_2013$SI.POV.DDAY/100
+df_bubble_2013$TotalPopPov = df_bubble_2013$SI.POV.DDAY * df_bubble_2013$SP.POP.TOTL
+
+colnames(df_bubble_2013) = c("Country.Code", "Country.Name","Region","Year","Poverty","LifeExpec","TotalPop","TotalPopPov")
+
+#omit NA's
+df_bubble_2013_na = na.omit(df_bubble_2013)
+#order to omit regions, only hold countries
+df_bubble_2013_na = df_bubble_2013_na[order(df_bubble_2013_na$Region, df_bubble_2013_na$Country.Name),]
+x = as.numeric(dim(df_bubble_2013_na))
+k = x[1]
+df_bubble_2013_na = df_bubble_2013_na[c(13:k),]
+#fix values with to many decimals and poverty percentage value
+df_bubble_2013_na$Poverty = df_bubble_2013_na$Poverty *100
+df_bubble_2013_na$Poverty = round(df_bubble_2013_na$Poverty,2)
+df_bubble_2013_na$TotalPop = round(df_bubble_2013_na$TotalPop,2)
+df_bubble_2013_na$TotalPopPov = round(df_bubble_2013_na$TotalPopPov,2)
+df_bubble_2013_na$LifeExpec = round(df_bubble_2013_na$LifeExpec,2)
+
+#CODE FOR STACKED GRAPH
+poverty_gap_data <- subset(mydata,mydata$Indicator.Code=="SI.POV.GAPS")
+poverty_gap_data_1990 <- poverty_gap_data[,c(1:3,4:4, 35:60)]
+# remove the 'X' in the columns
+colnames(poverty_gap_data_1990) <- sub("X", "", colnames(poverty_gap_data_1990))
+#remove the rows without any data
+poverty_gap_withoutNA <- poverty_gap_data_1990[-which(rowSums(is.na(poverty_gap_data_1990))>24),]
+#reshape the data for drawing graphs
+poverty_melt = melt(poverty_gap_withoutNA, id=c("Indicator.Code","Indicator.Name","Country.Code", "Country.Name"), value.name = "Year")
+#stacked area graph
+##poverty line $1.90, six regions in one graph
+regions_melt <- subset(poverty_melt, Country.Name =="East Asia & Pacific" | Country.Name =="Europe & Central Asia"| Country.Name =="Latin America & Caribbean"| Country.Name =="Middle East & North Africa"| Country.Name =="South Asia"| Country.Name =="Sub-Saharan Africa")
+
+```
+
 
 
 #### Chapter 3 modelling and graphs
 -	Define a descriptive model for the relevant data (Visual graphs)
 -	Specify a prior distribution
 -	Use Bayesian inference to discuss credibility across parameter values
-
+7
 First we explore our data, by analysing the data and to 
 
 
@@ -132,17 +367,38 @@ Within chapter 3, we try to answer our research question by means of several sub
 
 
 3.1 The state of poverty in the world
-
+The code below plots the absolute number op people living in poverty (below 1.90$ a day) over the years 1980 till 2015
+```{r}
+#layout
+a <- list(
+  title = "Years",
+  showticklabels = TRUE,
+  gridwidth = 2,
+  autotick = F, 
+  dtick = 2,
+  range = c(0,25)
+)
+b <- list(
+  title = "Number of people living in poverty (1,90$ a day)",
+  showticklabels = TRUE,
+  gridwidth = 2,
+  range = c(-5000000,2000000000),
+  showline = T
+)
+#plot the graph
+plot_ly(wide, x = ~Year, y = ~absolute, type = 'scatter', mode = 'lines') %>% 
+  layout(xaxis = a, yaxis = b)
+```
 
 ```
-```{r setup, include=FALSE}
+```{r}
 knitr::opts_chunk$set(echo = TRUE)
 #selecting data from wdi + average of 6 years 2010 - 2015
 colnames(our_indicator_data) = c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year", "value")
 var_i = c("SI.POV.DDAY","SP.POP.TOTL")
 #subset the data with only the world and the two indicators above about population and people in poverty in %
 graph_data = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_i)
-graph_data = subset(graph_data,graph_data$'Year' %in% year)
+graph_data = subset(graph_data,graph_data$'Year' %in% Year)
 
 test <- subset(graph_data, select = c("Indicator.Code","Country.Name", "Country.Code", "Year", "value"))
 df_mean_pov = dcast(test,Country.Code + Country.Name + Indicator.Code ~ Year, value.var ="value")
@@ -156,7 +412,6 @@ df_mean_pov$MeanHeadCount = df_mean_pov$MeanHeadCount*100
 df_mean_pov$MeanPop = round(df_mean_pov$MeanPop,2)
 df_mean_pov$MeanHeadCount = round(df_mean_pov$MeanHeadCount,2)
 df_mean_pov$MeanPovPop = round(df_mean_pov$MeanPovPop,2)
-
 
 # light grey boundaries
 l <- list(color = toRGB("grey"), width = 0.5)
@@ -187,12 +442,176 @@ k <- plot_geo(df_mean_pov) %>%
     title = 'Prevalance of Extreme Poverty during 2010 - 2015 (below 1.90$ a day)',
     geo = g )
 k
+```
+```
 
 
+Plotting the gini indices
+Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map.
 
+```{r}
+#What countries have the lowest gini indices?
+cl <- c("MDG","BDI","MWI","GNB","MOZ","ZMB","LSO")
+# subset with only those countries
+idmc <- subset(idm,idm$Country.Code %in% cl)
+# plot the gini idexes of those countries over time
+x <- list( title = "Years" )
+y <- list( title = "Gini Index" )
+m <- list(l=150, r=20, b=70, t=10)
+pline <- plot_ly(idmc, x = ~idmc$variable, y = ~idmc$value, color = ~idmc$Country.Code) %>%
+  add_lines(line = list(shape = "spline"))  %>% layout(xaxis = x, yaxis = y, margin=m)
+pline
+```
 
+Below is the code for the lorenzcurve of the countrie with the lowest Gini Index. The lorenzcurve shows the distribution of wealth between the people in a country. Every Lorenzcurve has it own gini score. The more away the lorenzcurve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed.
+
+```{r}
+# PLOT THE LORENZ CURVE OF ONE OF THE COUNTRIES (if a flat line occurs, there is no data)
+# Get the indicators for the lorenz curve
+my_var = c( "SI.DST.05TH.20","SI.DST.02ND.20","SI.DST.03RD.20", "SI.DST.04TH.20", "SI.DST.FRST.20")
+# fill in country code in V1 and run code below
+V1 = c("LSO")
+# subset the data with only the country and the needed indicators
+country_data = subset(indicator_data,indicator_data$Country.Code %in% V1)
+COUNTRY_LC_V1 = subset(country_data,country_data$Indicator.Code %in% my_var)
+# slice the needed data for the desirable year
+COUNTRY_2015 = COUNTRY_LC_V1[,c(1:4,55:55)]
+# create a vector for the lorenz curve function
+p20 = c( 20, 40, 60 , 80, 100)
+# sort the values of the indicators. Make sure the year is the right one
+d20 = sort(COUNTRY_2015$X2010)
+# plot the lorenz curve
+Lc.c <- Lc(d20, p20)
+plot(Lc.c)
+
+gini_index_country = Gini(d20)
 
 ```
+
+
+Below is the code for the bubble between poverty and spendings on education
+
+```{r}
+#determine size per bubble
+slope <- 2.8e-6
+df_bubble_2013_na_se$size <- sqrt(df_bubble_2013_na_se$Poverty * slope)*5000
+colors = c('#FF934F','#FFD166','#5FCC8C','#EF6464','#5DCBEF','#8C6ACC','#CC6AAC')
+
+p <- plot_ly(df_bubble_2013_na_se, x = ~EduSpending, y = ~Poverty, color = ~Region, size = ~size, colors = colors,
+             type = 'scatter', mode = 'markers', sizes = c(min(df_bubble_2013_na_se$size), max(df_bubble_2013_na_se$size)),
+             marker = list(symbol = 'circle', sizemode = 'diameter',
+                           line = list(width = 2, color = '#FFFFFF')),
+             text = ~paste('Country:', Country.Name,
+                           '<br> Region:', Region,
+                           '<br>Spending on Education % of GDP:', EduSpending,"%",
+                           "<br> Percentage of population living in Extreme Poverty", Poverty,"%",
+                           "<br> Total population living in Extreme Poverty:", TotalPopPov,"M",
+                           '<br> Total population:', TotalPop, "M")) %>%
+  layout(title = 'Public spending on education and the prevalence of Extreme Poverty',
+         xaxis = list(title = 'Public spending on education (% of GDP)',
+                      gridcolor = 'rgb(255, 255, 255)',
+                      zerolinewidth = 1,
+                      ticklen = 4,
+                      gridwidth = 2),
+         yaxis = list(title = 'Prevalence of Poverty (%population)',
+                      gridcolor = 'rgb(255, 255, 255)',
+                      zerolinewidth = 1,
+                      ticklen = 5,
+                      gridwith = 2),
+         paper_bgcolor = 'rgb(243, 243, 243)',
+         plot_bgcolor = 'rgb(243, 243, 243)')
+p
+```
+Code for bubble chart between poverty and life expactancy
+```{r}
+#determine size per bubble
+slope <- 2.8e-6
+df_bubble_2013_na$size <- sqrt(df_bubble_2013_na$Poverty * slope)*5000
+colors = c('#FF934F','#FFD166','#5FCC8C','#EF6464','#5DCBEF','#8C6ACC','#CC6AAC')
+                                            
+p <- plot_ly(df_bubble_2013_na, x = ~LifeExpec, y = ~Poverty, color = ~Region, size = ~size, colors = colors,
+             type = 'scatter', mode = 'markers', sizes = c(min(df_bubble_2013_na$size), max(df_bubble_2013_na$size)),
+             marker = list(symbol = 'circle', sizemode = 'diameter',
+                           line = list(width = 2, color = '#FFFFFF')),
+             text = ~paste('Country:', Country.Name, '<br> Life expectance by birth', LifeExpec,"years", '<br>Region:', Region,
+                           "<br> Percentage of population living in Extreme Poverty", Poverty,"%",
+                           "<br> Total population living in Extreme Poverty:", TotalPopPov,"M",
+                           '<br> Total population:', TotalPop, "M")) %>%
+  layout(title = 'Life Expectancy and Extreme Poverty 2013',
+         xaxis = list(title = 'Life expectancy in years (by birth)',
+                      gridcolor = 'rgb(255, 255, 255)',
+                      zerolinewidth = 1,
+                      type = 'log',
+                      ticklen = 4,
+                      gridwidth = 2),
+         yaxis = list(title = 'Prevalence of Poverty (% of population)',
+                      gridcolor = 'rgb(255, 255, 255)',
+                      zerolinewidth = 1,
+                      ticklen = 5,
+                      range = c(-15,100),
+                      gridwith = 2),
+         paper_bgcolor = 'rgb(243, 243, 243)',
+         plot_bgcolor = 'rgb(243, 243, 243)')
+p
+
+```
+code for stacked graph
+```{r}
+gg <- ggplot(regions_melt, aes(x=as.numeric(as.character(variable)), y=value))
+gg <- gg + geom_area(aes(fill=Country.Name))
+#the color of the stacked area
+gg = gg + scale_fill_brewer(palette="Greens", breaks=rev(levels(regions_melt$Country.Name)))
+#label name
+gg <- gg + labs(x="Year", y="Poverty ratio",col="Regions")
+#label of the legend
+gg <- gg + guides(fill = guide_legend(title = "Region"))
+#remove the background and grid
+gg <- gg + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+                              panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+gg
+
+```
+The code below is for the worldmap
+
+```{r}
+#Selecting MDI Data, drop last 3 columns with no values
+MPIData = read.table("MPIData.csv",sep=";",header=TRUE)  
+colnames(MPIData)[1] <- "CountryCode"
+MPIData = MPIData[,1:20]
+
+#Selecting MDI Data, drop last 3 columns with no values
+MPIData2016 = read.table("MPIData2016.csv",sep=";",header=TRUE)  
+colnames(MPIData2016)[1] <- "PublishYear"
+
+# light grey boundaries
+l <- list(color = toRGB("grey"), width = 0.5)
+
+MPIData2016$hover <- with(MPIData2016, paste
+                      ( "Year:", SurveyYear,
+                            "<br> Country:", Country,
+                            "<br> Share of the pop. in Multi Level Poverty: ", Headcount.ratio ,"%",
+                            "<br> Multi Poverty Index:", MPI,
+                            "<br> Child school attendace:", ChildSchoolAttendance))
+                          
+# specify map projection/options
+g <- list(
+  resolution = 5,
+  showcoastlines = T,
+  countrycolor = toRGB("grey"),
+  coastlinecolor = toRGB("grey"),
+  projection = list(type = 'Mercator') 
+)
+
+k <- plot_geo(MPIData2016) %>%
+  add_trace(z = ~Headcount.ratio,text = ~hover, color = ~Headcount.ratio, colors = 'YlGnBu' ,
+            locations = ~CountryCode, 
+            marker = list(line = l,color = 'rgb(255,255,255)')) %>%
+  
+  colorbar(title = '/nShare of population living in MPI') %>%
+  layout(
+    title = 'Share of population per country trapped in multi level poverty',
+    geo = g )
+k
 ```
 #### Chapter 4 evaluation
 - evaluation
