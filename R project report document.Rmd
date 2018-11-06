@@ -116,23 +116,9 @@ Secondly, we choose to start our analysis in a world level to have a first sight
 
 Thirdly, we use the data from 1990 to 2015. The number of people living in extreme poverty dropped by more than half between 1990 and 2015. We want to find out the exact trend of how poverty has changed in the word thought out that period. Further more, we try to quantify the correlation between poverty in certain countries and the social welfare system in those countries to have a basic knowledge on how effective the social programs are.
 
-Last, we want to predict the missing data on poverty with our regression model using predictors of life expectancy, education, and mortality of infants, and with the data we will get a fuller picture of how the poverty will be reduced in the future.
-
-
 
 2.Data Description and quality problem 
-We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scale of both social science and economy so that we could look into the properties of poverty with a broader scope. 
-
-**Missing part: Quantity of the data:**
-In the indicators we choose, a lot of data is missing. We have two solutions on the missing data. Strategy one is to drop off the data with a lot of missing part. The other way is more…
-
-**What do we do with the missing data:**
-For the world map, 
-
-Also, we try to make a multiple regression model based on Baye’s rule using the predictors we choose, again within the predictors there are lot of missing data(i.e. NA in the predictor education). **how many missing data are there**
-To deal with the problem, …
-
-
+We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scale of both social science and economy so that we could look into the properties of poverty in a broader scope. 
 
 - Data preparation  how did we modify the data to properly use it 
 the data:
