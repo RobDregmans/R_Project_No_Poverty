@@ -136,7 +136,6 @@ To deal with the problem, …
 Here we make a list of name of data in the fields that we are interested in, merge them in to one single longer list and make a subset of the data we want.
 
 ```{r}
-
 # Read the data in correctly
 mydata_utf8 = read.table("WDI/WDIData.csv",sep=",",fileEncoding="UTF-8-BOM",header=TRUE)  
 
@@ -206,7 +205,6 @@ my_vars_c = c(my_vars)
 But for purpose of easier use, we reshape the data into the format that in each row, there’s one value of an indicator in one country of one year, with the columns of country code, region, country name, indicator code, indicator name, year, and the value. Also we delete the “X” in the name of years.
 
 ```{r}
-
 # subset the data - selected var with all years
 #country_data = subset(mydata,mydata$Country.Code %in% country_code$V1)
 indicator_data = subset(mydata,mydata$Indicator.Code %in% my_vars_c)
@@ -446,7 +444,9 @@ k <- plot_geo(df_mean_pov) %>%
 k
 ```
 ```
-#### Plotting the gini indices
+
+
+Plotting the gini indices
 Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map.
 
 ```{r}
@@ -466,7 +466,6 @@ pline
 Below is the code for the lorenzcurve of the countrie with the lowest Gini Index. The lorenzcurve shows the distribution of wealth between the people in a country. Every Lorenzcurve has it own gini score. The more away the lorenzcurve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed.
 
 ```{r}
-
 # PLOT THE LORENZ CURVE OF ONE OF THE COUNTRIES (if a flat line occurs, there is no data)
 # Get the indicators for the lorenz curve
 my_var = c( "SI.DST.05TH.20","SI.DST.02ND.20","SI.DST.03RD.20", "SI.DST.04TH.20", "SI.DST.FRST.20")
@@ -556,6 +555,7 @@ p <- plot_ly(df_bubble_2013_na, x = ~LifeExpec, y = ~Poverty, color = ~Region, s
 p
 
 ```
+code for stacked graph
 ```{r}
 gg <- ggplot(regions_melt, aes(x=as.numeric(as.character(variable)), y=value))
 gg <- gg + geom_area(aes(fill=Country.Name))
