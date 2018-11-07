@@ -270,8 +270,7 @@ colnames(df_bubble_2013) = c("Country.Code", "Country.Name","Region","Year","Edu
 df_bubble_2013_na = na.omit(df_bubble_2013)
 #order to omit regions, only hold countries
 df_bubble_2013_na = df_bubble_2013_na[order(df_bubble_2013_na$Region, df_bubble_2013_na$Country.Name),]
-x = as.numeric(dim(df_bubble_2013_na))
-k = x[1]
+k = as.numeric(dim(df_bubble_2013_na))[1]
 df_bubble_2013_na_se = df_bubble_2013_na[c(13:k),]
 #fix values with to many decimals and poverty percentage value
 df_bubble_2013_na_se$Poverty = df_bubble_2013_na_se$Poverty *100
@@ -299,8 +298,7 @@ colnames(df_bubble_2013) = c("Country.Code", "Country.Name","Region","Year","Pov
 df_bubble_2013_na = na.omit(df_bubble_2013)
 #order to omit regions only hold countries
 df_bubble_2013_na = df_bubble_2013_na[order(df_bubble_2013_na$Region, df_bubble_2013_na$Country.Name),]
-x = as.numeric(dim(df_bubble_2013_na))
-k = x[1]
+k = as.numeric(dim(df_bubble_2013_na))[1]
 df_bubble_2013_na = df_bubble_2013_na[c(13:k),]
 #fix values with to many decimals and poverty percentage value
 df_bubble_2013_na$Poverty = df_bubble_2013_na$Poverty *100
@@ -308,6 +306,8 @@ df_bubble_2013_na$Poverty = round(df_bubble_2013_na$Poverty,2)
 df_bubble_2013_na$TotalPop = round(df_bubble_2013_na$TotalPop,2)
 df_bubble_2013_na$TotalPopPov = round(df_bubble_2013_na$TotalPopPov,2)
 df_bubble_2013_na$LifeExpec = round(df_bubble_2013_na$LifeExpec,2)
+df_bubble=merge(df_bubble_2013_na,df_bubble_2013_na_se,id= "Country.Code", all.x = T)
+
 
 ```
 
@@ -471,11 +471,11 @@ Below is the code for the bubble between poverty and spendings on education
 ```{r}
 #determine size per bubble
 slope <- 2.8e-6
-df_bubble_2013_na_se$size <- sqrt(df_bubble_2013_na_se$Poverty * slope)*5000
+df_bubble$size <- sqrt(df_bubble$Poverty * slope)*5000
 colors = c('#FF934F','#FFD166','#5FCC8C','#EF6464','#5DCBEF','#8C6ACC','#CC6AAC')
 
-p <- plot_ly(df_bubble_2013_na_se, x = ~EduSpending, y = ~Poverty, color = ~Region, size = ~size, colors = colors,
-             type = 'scatter', mode = 'markers', sizes = c(min(df_bubble_2013_na_se$size), max(df_bubble_2013_na_se$size)),
+p <- plot_ly(df_bubble, x = ~EduSpending, y = ~Poverty, color = ~Region, size = ~size, colors = colors,
+             type = 'scatter', mode = 'markers', sizes = c(min(df_bubble$size), max(df_bubble$size)),
              marker = list(symbol = 'circle', sizemode = 'diameter',
                            line = list(width = 2, color = '#FFFFFF')),
              text = ~paste('Country:', Country.Name,
@@ -503,11 +503,11 @@ Code for bubble chart between poverty and life expactancy
 ```{r}
 #determine size per bubble
 slope <- 2.8e-6
-df_bubble_2013_na$size <- sqrt(df_bubble_2013_na$Poverty * slope)*5000
+df_bubble$size <- sqrt(df_bubble$Poverty * slope)*5000
 colors = c('#FF934F','#FFD166','#5FCC8C','#EF6464','#5DCBEF','#8C6ACC','#CC6AAC')
                                             
-p <- plot_ly(df_bubble_2013_na, x = ~LifeExpec, y = ~Poverty, color = ~Region, size = ~size, colors = colors,
-             type = 'scatter', mode = 'markers', sizes = c(min(df_bubble_2013_na$size), max(df_bubble_2013_na$size)),
+p <- plot_ly(df_bubble, x = ~LifeExpec, y = ~Poverty, color = ~Region, size = ~size, colors = colors,
+             type = 'scatter', mode = 'markers', sizes = c(min(df_bubble$size), max(df_bubble$size)),
              marker = list(symbol = 'circle', sizemode = 'diameter',
                            line = list(width = 2, color = '#FFFFFF')),
              text = ~paste('Country:', Country.Name, '<br> Life expectance by birth', LifeExpec,"years", '<br>Region:', Region,
