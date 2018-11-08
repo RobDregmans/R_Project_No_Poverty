@@ -6,7 +6,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "C:/Users/ivarnieuwepc/Documents/GitHub/data")
+knitr::opts_knit$set(root.dir = "C:/Users/rob/Documents/GitHub/data")
 knitr::opts_chunk$set(comment=NA, fig.width=15, fig.height=15, fig.align = "center")
 library(reshape)
 library(reshape2)
@@ -362,12 +362,15 @@ b <- list(
   title = "Number of people living in poverty (1,90$ a day)",
   showticklabels = TRUE,
   gridwidth = 2,
-  showline = T
+  showline = T,
+  range = c(0,2)
 )
 #plot the graph
 plot_ly(wide, x = ~Year, y = ~absolute, text = ~hover ,type = 'scatter', mode = 'lines') %>% 
   layout(xaxis = a, yaxis = b, title = 'Global population living in extreme poverty 1990 - 2015')
 ```
+In the graph above we see the absolute number of people living in poverty, which means they have only 1.90$ a day to spend. The data from this graph is aquired by multiplying the percentage of people living in poverty by the total population of that same country. All these numbers are summed and then displayed. We can see that the absolute number of people living in poverty is rapidly declining, but nevertheless way to high. Whereas in 1990 1898 million people where living in poverty, now in 2015 that number is 736 million. Note that this is the absolute number of people living in poverty and that the number is not corrected for the trend in population growth. So in a more optimistic view, even since the world population has risen, the absolute number of people living in poverty is declining.
+
 
 ``` {r}
 knitr::opts_chunk$set(echo = TRUE)
@@ -421,10 +424,12 @@ k <- plot_geo(df_mean_pov) %>%
   layout(title = 'Prevalance of Extreme Poverty during 2010 - 2015 (below 1.90$ a day)',geo = g)
 k
 ```
+The worldmap above is showing the prevalence of poverty displayed per country. What immediately attracks the eye are the big red spots in Africa, where the prevalence of poverty is the highest. However, there are also a lot of white spots, which represent missing data. To get an better idea of the real prevalence of poverty in Africa, we need to do something about that missing data.
 
 
 Plotting the gini indices
-Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map.
+Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map. The Gini index is a measure for how wealth is distributed in a certain country. The higher the Gini index, the more unequal the wealth is distributed. The theoratical maximum value is nearly 100, where all the wealth is with less than one percent of the population. If the Gini index is 0, it represents complete equality in wealth distribution, so that everyone has the samen wealth. In general wealth is measured in income.
+From the graph we can conclude that the Gini indices for the seven plotted countries in general oscilates between 35 and 65. We can also see that for the most countries there is not a lot of progression over the last 35 years. For example, Madagascar had a Gini index of 46,8 in 1980 and has a Gini index of 42,6 in 2012, while in the years in between the Gini index went up and down several times.
 
 ```{r}
 #What countries have the lowest gini indices?
@@ -466,7 +471,7 @@ gini_index_country = Gini(d20)
 ```
 
 
-Below is the code for the bubble between poverty and spendings on education
+Below is the code for the bubble between poverty and spendings on education. In the graph we can see the relation between poverty and the spendings on education by the government. The size of bubbles represent the 
 
 ```{r}
 #determine size per bubble
