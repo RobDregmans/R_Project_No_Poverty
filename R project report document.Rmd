@@ -428,7 +428,7 @@ The worldmap above is showing the prevalence of poverty displayed per country. W
 
 
 Plotting the gini indices
-Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map. The Gini index is a measure for how wealth is distributed in a certain country. The higher the Gini index, the more unequal the wealth is distributed. The theoratical maximum value is nearly 100, where all the wealth is with less than one percent of the population. If the Gini index is 0, it represents complete equality in wealth distribution, so that everyone has the samen wealth. In general wealth is measured in income.
+Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map. The Gini index is a measure for how wealth is distributed in a certain country. The higher the Gini index, the more inequal the wealth is distributed. The theoratical maximum value is nearly 100, where all the wealth is with less than one percent of the population. If the Gini index is 0, it represents complete equality in wealth distribution, so that everyone has the samen wealth. In general wealth is measured in income.
 From the graph we can conclude that the Gini indices for the seven plotted countries in general oscilates between 35 and 65. We can also see that for the most countries there is not a lot of progression over the last 35 years. For example, Madagascar had a Gini index of 46,8 in 1980 and has a Gini index of 42,6 in 2012, while in the years in between the Gini index went up and down several times.
 
 ```{r}
@@ -464,7 +464,7 @@ p20 = c( 20, 40, 60 , 80, 100)
 d20 = sort(COUNTRY_2015$X2010)
 # plot the lorenz curve
 Lc.c <- Lc(d20, p20)
-plot(Lc.c)
+plot(Lc.c,col="darkred",lwd = 6, main = 'Lorenz Curve for Lesotho in the year 2010',xlab = 'Percentage of the people', ylab = 'percentage of the wealth')
 
 gini_index_country = Gini(d20)
 
