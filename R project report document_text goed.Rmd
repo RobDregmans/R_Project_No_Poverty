@@ -3,11 +3,10 @@ title: "R Project Report"
 output: html_document
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "C:/Users/ivarnieuwepc/Documents/GitHub/data")
-knitr::opts_chunk$set(comment=NA, fig.width=15, fig.height=15, fig.align = "center")
+knitr::opts_knit$set(root.dir = "C:/Users/rob/Documents/GitHub/data")
+knitr::opts_chunk$set(comment=NA, fig.width=10, fig.height=10, fig.align = "center")
 library(reshape)
 library(reshape2)
 library(dplyr)
@@ -45,16 +44,16 @@ To mobilise resources to overcome inequalities between developed and developing 
 This is where a problem lies for analysing the poverty problem. Within the World Development Indicators, a lot of data is missing on various indicators on poverty. According to the IEG, reaching the UN targets faces many obstacles, among one of them is the lack of regularly high-quality data. Of the 139 developing countries, 22 have no data for the past three decades, some 30 countries have not had a survey in the past decade, and 20 countries only have had one survey since 2000 [2]. 
 
 What is even more striking, is that one third of these countries are in Sub-Saharan Africa, where poverty is most frequent. Furthermore, from the countries that are reporting new surveys, eighty percent are from middle-income economies or higher. Also, additions to the survey database have been declining in recent years and the number of surveys within five years of a given date are declining rapidly [2].
- 
+
 One of the problems of building and maintaining a usable poverty database are financial, it would cost around 30 million/year to continuously perform surveys in 77 lower income countries. But these costs are not the main problem. There is also an enormous lack of political will within the government to proper store poverty data. Political will covers a multitude of obstacles from a refusal to collect data to unwillingness to release data for analysis. Also, many surveys on poverty known to World Bank staff are not available to other analysts or even to the citizens of the country [3].
 
 ### 1.3 Goal of this report
 
-The success of the Sustainable Development Goals will be judged on what the data is telling us about their current state. For SDG 1, this will be mainly done in achieving the headline indicator of extreme poverty reduction, which is the share the population in a country living under the extreme poverty line of 1.90 a day. Without better poverty data, collected more frequently, and open to all, we will never know if that goal can be achieved. This can be done by collecting data, but it would take a lot of time to gather all this data and process it. Therefore, the main goal of this report is constructing a predictive model on basis of indicators that are related to poverty. We also try to get it an insight in the current state of poverty around the world the determine if our model is predicting accurate enough. 
+The success of the Sustainable Development Goals will be judged on what the data is telling us about their current state. For SDG 1, this will be mainly done in achieving the headline indicator of extreme poverty reduction, which is the share the population in a country living under the extreme poverty line of 1.90 a day. Without better poverty data, collected more frequently, and open to all, we will never know if that goal can be achieved. This can be done by collecting data, but it would take a lot of time to gather all this data and process it. Therefore, the main goal of this report is constructing a predictive model on basis of indicators that are related to poverty. We also try to get it an insight in the current state of poverty around the world to determine if our model predictions are accurate enough. 
 
 ### 1.4 Research questions
 
-Our main research question twofold, the main part is about constructing a model that predicts poverty for various countries around the world. Besides that, we try to explore the current state of poverty and the distribution of wealth around the world. 
+Our main research question is twofold. The main part is about constructing a model that predicts poverty for various countries around the world. Besides that, we try to explore the current state of poverty and the distribution of wealth around the world. 
 
 *Our main research question is:*
 *What was the development of poverty around the world since 1990 and can we predict the prevalence of extreme poverty within countries based on a predictive bayesian model? 
@@ -90,11 +89,11 @@ http://www.un.org/en/sections/issues-depth/big-data-sustainable-development/inde
 
 1.Initial data collection
 
-Our data comes from World Development Indicators database(http://data.worldbank.org/data-catalog/world-development-indicators). On the website we could download the data, WDIData.csv. We focus on one of the UN Sustainable Development Goals, No Poverty. Data of over 1440 indicators of more than 200 countries and regions from 1960 to 2015 are provided in the WDI dataset, but only some of them are relevant to what we want to discuss about.  
+Our data comes from World Development Indicators database(http://data.worldbank.org/data-catalog/world-development-indicators). On the website we could download the data, WDIData.csv. We focus on one of the UN Sustainable Development Goals: No Poverty. Data of over 1440 indicators of more than 200 countries and regions from 1960 to 2015 are provided in the WDI dataset, but only some of them are relevant to what we want to discuss about.  
 
-And two problems has encountered when we try to acquire the data.
+We encounter two problems when we try to acquire the data.
 
-First, we narrow down the scope of indicators of the following fields that might be related to ‘No poverty’ goal:
+First, we narrow down the scope of indicators of the following fields that might be related to ‘No poverty’ goal. This includes the following indicators:
 
 1. Poverty headcount and poverty gap:
 -Poverty headcount ratio at national poverty lines (% of population)
@@ -116,19 +115,19 @@ First, we narrow down the scope of indicators of the following fields that might
 
 Secondly, we choose to start our analysis in a world level to have a first sight into the data, and then focus on some certain countries with data in relatively abnormal trend. 
 
-Thirdly, we use the data from 1990 to 2015. The number of people living in extreme poverty dropped by more than half between 1990 and 2015. We want to find out the exact trend of how poverty has changed in the word thought out that period. Further more, we try to quantify the correlation between poverty in certain countries and the social welfare system in those countries to have a basic knowledge on how effective the social programs are. 
+Thirdly, we mostly use the data from 1990 to 2015. The number of people living in extreme poverty dropped by more than half between 1990 and 2015. We want to find out the exact trend of how poverty has changed in the word thought out that period. Further more, we try to quantify the correlation between poverty in certain countries and the social welfare system in those countries to have a basic knowledge on how effective the social programs are. 
 
 Last, we want to predict the missing data on poverty with our regression model using predictors of life expectancy, education, and mortality of infants, and with the data we will get a fuller picture of how the poverty will be reduced in the future.
 
-2.Data Description and quality problem 
+2.Data Description and quality problem
 
 We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis that social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scales of both social science and economy so that we could look into the properties of poverty with a broader scope. 
 But in the indicators we choose, a lot of data is missing. We have two solutions on the missing data. The first solution is to drop off the data with missing part. The other way is to estimate the missing data with our regression model.
 
 
 - Data preparation  how did we modify the data to properly use it 
-1.Loading, choosing data we need and merging
-Here we make a list of name of data in the fields that we are interested in, merge them in to one single longer list and make a subset of the data we want.
+1.Loading, choosing and merging the data
+Here we make a list of name of data in the fields that we are interested in, merge them in to one single longer data frame and make a subset of the data we want.
 
 ```{r}
 # Read the data in correctly
@@ -192,21 +191,19 @@ for (i in List_of_indicators_list ) {
   my_vars = append(my_vars,i)
 }
 my_vars_c = c(my_vars)
+# subset the data 
+indicator_data = subset(mydata,mydata$Indicator.Code %in% my_vars_c)
+# subset the data - selected var with only 1990 - 2015
+indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
+
 
 ```
 
 2.Reshaping
-But for purpose of easier use, we reshape the data into the format that in each row, there’s one value of an indicator in one country of one year, with the columns of country code, region, country name, indicator code, indicator name, year, and the value. Also we delete the “X” in the name of years.
+But for purpose of easier use, we reshape the data into the format that in each row, there’s one value of an indicator in one country of one year, with the columns of country code, region, country name, indicator code, indicator name, year, and the value. This is also knwon as a wide to long format transformation. Also we delete the “X” in the name of years.
 
 ```{r}
-# subset the data - selected var with all years
-#country_data = subset(mydata,mydata$Country.Code %in% country_code$V1)
-indicator_data = subset(mydata,mydata$Indicator.Code %in% my_vars_c)
-
-# subset the data - selected var with only 1990 - 2015 & prepare data for plotting
-indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
 colnames(indicator_data_1990_2015) <- sub("X", "", colnames(indicator_data_1990_2015))
-
 our_indicator_data= melt(indicator_data_1990_2015,id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
 #setting up indicator data with country names from python @martijn
 country_names = read.table("country_names.csv",sep = ",", header = TRUE)
@@ -233,19 +230,7 @@ regions_used = regions_used[,-c(2)]
 Generating used data for Linechart about poverty
 ```{r}
 
-#CODE FOR THE GINI INDICES
-# subset the data - selected var GINI
-indicator_datagini = subset(indicator_data,indicator_data$Indicator.Code=="SI.POV.GINI")
 
-# LINE PLOT FOR THE COUNTRIES WITH THE HIGHEST GINI INDEXES
-# extract the right years (25:60 is 1980 till 2015)
-id = indicator_datagini[,c(2:3,4:4, 25:60)]
-# remove the 'X' in the columns
-colnames(id) <- sub("X", "", colnames(id))
-# change the format
-idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
-# throw away the rows with missing data
-idm <- na.omit(idm, cols="value")
 ```
 
 
@@ -307,8 +292,6 @@ df_bubble_2013_na$TotalPop = round(df_bubble_2013_na$TotalPop,2)
 df_bubble_2013_na$TotalPopPov = round(df_bubble_2013_na$TotalPopPov,2)
 df_bubble_2013_na$LifeExpec = round(df_bubble_2013_na$LifeExpec,2)
 df_bubble=merge(df_bubble_2013_na,df_bubble_2013_na_se,id= "Country.Code", all.x = T)
-
-
 ```
 
 ## 3 Data exploration
@@ -512,6 +495,20 @@ From the graph we can conclude that the Gini indices for the seven plotted count
 
 
 ```{r}
+#CODE FOR THE GINI INDICES
+# subset the data - selected var GINI
+indicator_datagini = subset(indicator_data,indicator_data$Indicator.Code=="SI.POV.GINI")
+
+# LINE PLOT FOR THE COUNTRIES WITH THE HIGHEST GINI INDEXES
+# extract the right years (25:60 is 1980 till 2015)
+id = indicator_datagini[,c(2:3,4:4, 25:60)]
+# remove the 'X' in the columns
+colnames(id) <- sub("X", "", colnames(id))
+# change the format
+idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
+# throw away the rows with missing data
+idm <- na.omit(idm, cols="value")
+
 #What countries have the lowest gini indices?
 cl <- c("MDG","BDI","MWI","GNB","MOZ","ZMB","LSO")
 # subset with only those countries
