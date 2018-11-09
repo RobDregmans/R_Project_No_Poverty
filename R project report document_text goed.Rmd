@@ -937,21 +937,15 @@ k
 
 
 # Evaluation
-- evaluation
-Insights gained from the figures and graphs  is useful because they play an important role in assissting policy makers and project implementers by revealing the poverty trend in the world, the potential causes of poverty, and thus helping evaluating the efforts put in targeting poverty alleviation.
+
+Insights gained from the figures and graphs is useful because they play an important role in assissting policy makers and project implementers by revealing the poverty trend in the world, the potential causes of poverty, and thus helping evaluating the efforts put in targeting poverty alleviation.
 
 The objectives of this report are: (1) to explore the spatial and temporal distribution of poverty and inequality at the regional and national level, (2) to show the strong correlation between children mortality, health outcomes and poverty, (3) to estimate how the level of poverty will be reduced or boosted  based on data in education, mortality at national level.
 
 ## Insufficiency of model
-In our model, due to the limitation of the quality and the quantity of data, the model has certain level of insufficiency. First, we could only use the indicators which satisfy the two following standards: it has relatively more “complete” data than the within the time period of 1990-2015, and it must have certain level correlation with poverty, which limits our choice on predictors in the Bayesian regression model.
-Second, our parameter setting of beta1 and sigma1 also has inaccuracy. The distribution model of our priors do not completely obey the uniform distribution or Weibull distribution,  but still we assume they do, which contributes to potential inaccuracy in the estimated poverty data.
--	Discuss research findings to quality of the model, quality of the data. 
 
--	How could the model be improved  suggest next steps
+In our model, due to the limitation of the quality and the quantity of data, the model has certain level of insufficiency. First, we could only use the indicators which satisfy the two following standards: it has relatively more “complete” data than the within the time period of 1990-2015, and it must have certain level correlation with poverty, which limits our choice on predictors in the Bayesian regression model. Second, our parameter setting of beta1 and sigma1 also has inaccuracy. The distribution model of our priors do not completely obey the uniform distribution or Weibull distribution, but still we assume they do, which contributes to potential inaccuracy in the estimated poverty data.
 
-# Development
-	- Can we predict future behaviour/Guide additional policy
-	
 ## How would we communicate our findings to decision makers?
 	
 According to the world map that we made, we show the spatial distribution of the people suffering from the poverty and the countries in two aspects: people living under extreme poverty line and the countries trapped in the multi level poverty. These graphs could help revealing where the poverty locates and make it more accurate when providing the assistance to alleviate the poverty. And also with the regression model we could estimate the poverty trend by data related to health conditions of the people.
