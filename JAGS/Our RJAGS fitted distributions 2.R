@@ -53,22 +53,21 @@ model_string <- "model{
 # Likelihood
 for(i in 1:n){
 x[i]  ~ dnorm(mu[i],inv.var1)
-mu[i] <- beta1 + beta2*y1[i] + beta3*y2[i] #+ beta4*y3[i]
+mu[i] <- beta1 + beta2*y1[i] + beta3*y2[i]
 }
 
 # Prior for beta
-beta1 ~ dunif(0,0.01)
+beta1 ~ dunif(0,0.1)
 beta2 ~ dexp(0.082930)       #undernourishment
-beta3 ~ dexp(0.072092)       #child mortality
-#beta4 ~ dweib(14,74.74)      #life expactency
+beta3 ~ dexp(0.032092)       #child mortality
 
 # Prior for the inverse variance
-var1   ~  dexp(0.072091952)    #poverty
+var1       ~   dunif(0,0.1)  #poverty
 inv.var1   <-  1/var1
 sigma1     <-  sqrt(var1)
 }"
 
-model <- jags.model(textConnection(model_string), data = list(x=x, y1=y1,y2=y2,n=n))
+model <- jags.model(textConnection(model_string), data = list(x=x, y1=y1,y2=y2,n=n),n.chains = 3)
 
 update(model, 10000, progress.bar="none"); # Burn-in for 10000 samples
 

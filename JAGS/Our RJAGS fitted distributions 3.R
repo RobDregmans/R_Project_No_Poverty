@@ -37,13 +37,13 @@ child_mortality = df_jags_year$SH.DYN.MORT
 n = nrow(df_jags_year)
 
 x <- poverty
-y1 <- life_expacteny
-y2 <- undernourishment
-y3 <- child_mortality
+y1 <- undernourishment
+y2 <- child_mortality
+y3 <- life_expacteny
 
 library(rjags)
 
-x <- (x-mean(x))/sd(x)
+x  <-  (x-mean(x))/sd(x)
 y1 <- (y1-mean(y1))/sd(y1)
 y2 <- (y2-mean(y2))/sd(y2)
 y3 <- (y3-mean(y3))/sd(y3)
@@ -52,41 +52,28 @@ model_string <- "model{
 
 # Likelihood
 for(i in 1:n){
-x[i]   ~ dnorm(mu[i],inv.var1)
+x[i]  ~ dnorm(mu[i],inv.var1)
 mu[i] <- beta1 + beta2*y1[i] + beta3*y2[i] + beta4*y3[i]
 }
 
 # Prior for beta
-beta1 ~ dnorm(13.871174,19.331200)
-beta2 ~ dnorm(71.3757905,7.8022477)
-beta3 ~ dnorm(12.0573913,11.6544603)
-beta4 ~ dnorm(32.040000,30.588289)
-
+beta1 ~ dexp(0.072029)
+beta2 ~ dexp(0.082930)       #undernourishment
+beta3 ~ dexp(0.032092)       #child mortality
+beta4 ~ dweib(14,74.74)      #life expactency
 
 # Prior for the inverse variance
-var1   ~ dunif(0.01, 0.99)
-var2   ~ dunif(0.01, 0.99)
-var3   ~ dunif(0.01, 0.99)
-var4   ~ dunif(0.01, 0.99)
-var5   ~ dunif(0.01, 0.99)
-inv.var1   <- 1/var1
-inv.var2   <- 1/var2
-inv.var3   <- 1/var3
-inv.var4   <- 1/var4
-inv.var5   <- 1/var5
-sigma1     <- sqrt(var1)
-sigma2     <- sqrt(var2)
-sigma3     <- sqrt(var3)
-sigma4     <- sqrt(var4)
-sigma5     <- sqrt(var5)
+var1       ~   dunif(0,0.1)  #poverty
+inv.var1   <-  1/var1
+sigma1     <-  sqrt(var1)
 }"
 
-model <- jags.model(textConnection(model_string), data = list(x=x, y1=y1,y2=y2,y3=y3,n=n))
+model <- jags.model(textConnection(model_string), data = list(x=x, y1=y1,y2=y2,y3=y3,n=n),n.chains = 4)
 
 update(model, 10000, progress.bar="none"); # Burn-in for 10000 samples
 
 samp <- coda.samples(model, 
-                     variable.names=c("beta1","beta2","beta3","beta4","sigma1","sigma2","sigma3","sigma4","sigma5" ), 
+                     variable.names=c("beta1","beta2","beta3","beta4","sigma1"), 
                      n.iter=20000, progress.bar="text")
 
 summary(samp)
@@ -114,7 +101,7 @@ n <- nrow(df_jags_year)
 # make an intercept
 intercept <- rep(1,n)
 # bind your data together in the order used for modelling
-data <- cbind(intercept,y1,y2,y3)
+data <- cbind(intercept,y1,y2, y3)
 pred <- param %*% t(data)
 pred <- t(pred)
 # replicate the results
