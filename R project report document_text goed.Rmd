@@ -6,7 +6,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = "C:/Users/rob/Documents/GitHub/data")
-knitr::opts_chunk$set(comment=NA, fig.width=10, fig.height=10, fig.align = "center")
+knitr::opts_chunk$set(comment=NA, fig.width=8, fig.height=8, fig.align = "center")
 library(reshape)
 library(reshape2)
 library(dplyr)
@@ -227,12 +227,6 @@ region_list = c('Latin America & Caribbean','South Asia','Sub-Saharan Africa','E
 regions_used = subset(all_regions, all_regions$'Region/Country Name' %in% region_list)
 regions_used = regions_used[,-c(2)]
 ```
-Generating used data for Linechart about poverty
-```{r}
-
-
-```
-
 
 
 ```{r}
@@ -301,7 +295,7 @@ Firstly, the current state of hunger in the world shall be analysed by looking a
 
 
 ### 3.1 The state of poverty in the world
-The code below plots the absolute number op people living in poverty (below 1.90$ a day) over the years 1980 till 2015. The graph is interactive, when you hover over it more information about the share of the total word population living in poverty becomes visible. 
+code
 ```{r}
 #FOR THE LINECHART ABOUT ABSOLUTE POVERTY
 world = c("WLD")
@@ -324,6 +318,12 @@ wide$absolute = round(wide$absolute,3)
 wide$hover = with(wide, paste( "Year:", Year ,
                                "<br> World population living in extreme poverty:",absolute,"M",
                                "<br> Share of global population:", SI.POV.DDAY,"%"))
+```
+
+The graph below shows the absolute number op people living in poverty (below 1.90$ a day) over the years 1980 till 2015. The graph is interactive, when you hover over it more information about the share of the total word population living in poverty becomes visible.
+
+In the graph we see the absolute number of people living in poverty, which means they have only 1.90$ a day to spend. The data from this graph is aquired by multiplying the percentage of people living in poverty by the total population of that same country. All these numbers are summed and then displayed. We can see that the absolute number of people living in poverty is rapidly declining, but nevertheless way to high. Whereas in 1990 1898 million people where living in poverty, now in 2015 that number is 736 million. Note that this is the absolute number of people living in poverty and that the number is not corrected for the trend in population growth. So in a more optimistic view, even since the world population has risen, the absolute number of people living in poverty is declining.
+```{r, layout="l-screen-inset"}
 #layout
 a <- list(
   title = "Years",
@@ -345,23 +345,25 @@ b <- list(
 plot_ly(wide, x = ~Year, y = ~absolute, text = ~hover ,type = 'scatter', mode = 'lines') %>% 
   layout(xaxis = a, yaxis = b, title = 'Global population living in extreme poverty 1990 - 2015')
 ```
-In the graph above we see the absolute number of people living in poverty, which means they have only 1.90$ a day to spend. The data from this graph is aquired by multiplying the percentage of people living in poverty by the total population of that same country. All these numbers are summed and then displayed. We can see that the absolute number of people living in poverty is rapidly declining, but nevertheless way to high. Whereas in 1990 1898 million people where living in poverty, now in 2015 that number is 736 million. Note that this is the absolute number of people living in poverty and that the number is not corrected for the trend in population growth. So in a more optimistic view, even since the world population has risen, the absolute number of people living in poverty is declining.
+
 
 #### Distribution over regions
-Below, we provided an overview of recent poverty trends for the standard ISO-regions, as provided by the OECD. The figure provides regional estimates of poverty rates (i.e. the share of population in each region living below the International Poverty Line). The poverty gap correspond to the International Poverty Line, at 1.90 int.$ in 2011 PPP prices.
-
-In Sub-Saharan Africa and South Asia, the  number of people in extreme poverty has increased, but since 2010, the absolute number of people in extreme poverty is declining in all world regions.
+code for stacked line graph
 
 ```{r}
-library(ggplot2)
-
 #CODE FOR STACKED GRAPH
 poverty_gap_data <- subset(our_indicator_data,our_indicator_data$Indicator.Code=="SI.POV.GAPS")
 #remove the rows without any data
 poverty_gap_withoutNA <- poverty_gap_data[-which(rowSums(is.na(poverty_gap_data))>0),]
 ##poverty line $1.90, six regions in one graph
 regions_melt <- subset(poverty_gap_withoutNA, Country.Name =="East Asia & Pacific" | Country.Name =="Europe & Central Asia"| Country.Name =="Latin America & Caribbean"| Country.Name =="Middle East & North Africa"| Country.Name =="South Asia"| Country.Name =="Sub-Saharan Africa")
+```
 
+Below, we provided an overview of recent poverty trends for the standard ISO-regions, as provided by the OECD. The figure provides regional estimates of poverty rates (i.e. the share of population in each region living below the International Poverty Line). The poverty gap correspond to the International Poverty Line, at 1.90 int.$ in 2011 PPP prices.
+
+In Sub-Saharan Africa and South Asia, the  number of people in extreme poverty has increased, but since 2010, the absolute number of people in extreme poverty is declining in all world regions.
+
+```{r}
 
 gg <- ggplot(regions_melt, aes(x=Year, y=Value))
 gg <- gg + geom_area(aes(fill=Country.Name))
@@ -376,8 +378,9 @@ gg <- gg + guides(fill = guide_legend(title = "Region"))
 gg <- gg + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
                               panel.grid.minor = element_blank(), axis.line = element_line(colour ="black"))
 gg
-
 ```
+
+Code for worldmap
 
 ``` {r}
 knitr::opts_chunk$set(echo = TRUE)
@@ -403,6 +406,11 @@ df_mean_pov['MeanPovPop'] = df_mean_pov[,3]*(df_mean_pov[,4]/100)
 df_mean_pov$MeanPop = round(df_mean_pov$MeanPop,2)
 df_mean_pov$MeanHeadCount = round(df_mean_pov$MeanHeadCount,2)
 df_mean_pov$MeanPovPop = round(df_mean_pov$MeanPovPop,2)
+```
+
+The worldmap is showing the prevalence of poverty displayed per country. What immediately attracks the eye are the big red spots in Africa, where the prevalence of poverty is the highest. However, there are also a lot of white spots, which represent missing data. To get an better idea of the real prevalence of poverty in Africa, we need to do something about that missing data.
+
+```{r}
 
 # light grey boundaries
 l <- list(color = toRGB("grey"), width = 0.5)
@@ -431,18 +439,15 @@ k <- plot_geo(df_mean_pov) %>%
   layout(title = 'Prevalance of Extreme Poverty during 2010 - 2015 (below 1.90$ a day)',geo = g)
 k
 ```
-The worldmap above is showing the prevalence of poverty displayed per country. What immediately attracks the eye are the big red spots in Africa, where the prevalence of poverty is the highest. However, there are also a lot of white spots, which represent missing data. To get an better idea of the real prevalence of poverty in Africa, we need to do something about that missing data.
+
 
 ### Section 3.2 Distribution of wealth
-
-The Multidimensional Poverty Index (MPI) published by the Oxford Poverty & Human Development Initiative (OPHI). The MPI is not aggregated at the country level, but at the individual level—it measures how one individual is deprived in different 'poverty'dimensions.
+The Multidimensional Poverty Index (MPI) published by the Oxford Poverty & Human Development Initiative (OPHI). The MPI is not aggregated at the country level, but at the individual level—it measures how one individual is deprived in different 'poverty' dimensions.
 
 The MPI is constructed from ten indicators across three core dimensions: health, education and living standards. In the following map below, we plotted the share of MPI poor people country by country. The multidimensional poverty index not only uses regular economic indicators such as income, consumption and GINI data, but also non-economic indicators such as nutrition, electricity and schooling. 
 
-Using the MPI to map poverty around the world, it provides us with a more clear picture of how prevalent poverty currently is around the globe. As we can see, this alternative metric shows that poverty is also particularly prevalant in sub-Saharan Africa, but also in India and Afghanistan. It is still a limitation that the MPI data relies heavenly on aggregated multi year data. So it is not possible to track the progress of countries on their MPI for individual years, just like the wolrd map of the prevelance of poverty we plotted over the 5 years average.
 
-Source:
-https://ourworldindata.org/extreme-poverty#correlates-determinants-and-consequences
+code documentation for code below
 
 ```{r}
 #Selecting MDI Data, drop last 3 columns with no values
@@ -463,6 +468,14 @@ MPIData2016$hover <- with(MPIData2016, paste
                             "<br> Share of the pop. in Multi Level Poverty: ", Headcount.ratio ,"%",
                             "<br> Multi Poverty Index:", MPI,
                             "<br> Child school attendace:", ChildSchoolAttendance))
+```
+
+Using the MPI to map poverty around the world, it provides us with a more clear picture of how prevalent poverty currently is around the globe. As we can see, this alternative metric shows that poverty is also particularly prevalant in sub-Saharan Africa, but also in India and Afghanistan. It is still a limitation that the MPI data relies heavenly on aggregated multi year data. So it is not possible to track the progress of countries on their MPI for individual years, just like the wolrd map of the prevelance of poverty we plotted over the 5 years average. So we are still looking for ways to get a better picture of the prevalence of poverty.
+
+Source:
+https://ourworldindata.org/extreme-poverty#correlates-determinants-and-consequences
+
+```{r}
                           
 # specify map projection/options
 g <- list(
@@ -483,7 +496,6 @@ k <- plot_geo(MPIData2016) %>%
     title = 'Share of population per country trapped in multi level poverty',
     geo = g )
 k
-
 ```
 
 
@@ -491,7 +503,6 @@ k
 
 #### Plotting the gini indices
 Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map. The Gini index is a measure for how wealth is distributed in a certain country. The higher the Gini index, the more inequal the wealth is distributed. The theoratical maximum value is nearly 100, where all the wealth is with less than one percent of the population. If the Gini index is 0, it represents complete equality in wealth distribution, so that everyone has the samen wealth. In general wealth is measured in income.
-From the graph we can conclude that the Gini indices for the seven plotted countries in general oscilates between 35 and 65. We can also see that for the most countries there is not a lot of progression over the last 35 years. For example, Madagascar had a Gini index of 46,8 in 1980 and has a Gini index of 42,6 in 2012, while in the years in between the Gini index went up and down several times.
 
 
 ```{r}
@@ -508,7 +519,11 @@ colnames(id) <- sub("X", "", colnames(id))
 idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
 # throw away the rows with missing data
 idm <- na.omit(idm, cols="value")
+```
 
+From the graph we can conclude that the Gini indices for the seven plotted countries in general oscilates between 35 and 65. We can also see that for the most countries there is not a lot of progression over the last 35 years. For example, Madagascar had a Gini index of 46,8 in 1980 and has a Gini index of 42,6 in 2012, while in the years in between the Gini index went up and down several times.
+
+```{r}
 #What countries have the lowest gini indices?
 cl <- c("MDG","BDI","MWI","GNB","MOZ","ZMB","LSO")
 # subset with only those countries
@@ -523,7 +538,7 @@ pline
 ```
 
 #### Plotting the lorenz curve
-Below is the code for the lorenzcurve of the countrie with the lowest Gini Index. The lorenzcurve shows the distribution of wealth between the people in a country. Every Lorenzcurve has it own gini score. The more away the lorenzcurve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed.ADD COUNTRY NAME IN TITLE
+Below is the code for the lorenzcurve of the countrie with the lowest Gini Index. The lorenzcurve shows the distribution of wealth between the people in a country. Every Lorenzcurve has it own Gini index. The more away the lorenzcurve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed.We can see for example in Losotho that around 70& of the wealth is with only 40% of the people. We can conclude that in the countries with a high prevalence of poverty there is also a high Gini index. This means that for the poor people in those countries the conditions are even more extreme.
 
 ```{r}
 # PLOT THE LORENZ CURVE OF ONE OF THE COUNTRIES (if a flat line occurs, there is no data)
@@ -537,7 +552,7 @@ COUNTRY_LC_V1 = subset(country_data,country_data$Indicator.Code %in% my_var)
 # slice the needed data for the desirable year
 COUNTRY_2015 = COUNTRY_LC_V1[,c(1:4,55:55)]
 # create a vector for the lorenz curve function
-p20 = c( 20, 40, 60 , 80, 100)
+p20 = c(0, 20, 40, 60 , 80,100)
 # sort the values of the indicators. Make sure the year is the right one
 d20 = sort(COUNTRY_2015$X2010)
 # plot the lorenz curve
@@ -553,7 +568,7 @@ gini_index_country = Gini(d20)
 Poverty has a strong relation with various outcomes of the society of a country. Therefore we have explored the data to find variables that are correlated with the prevelance of poverty, and we have plotted them in bubble graphs. These variables shall also be used in our predictive model.
 
 #### Poverty and child mortality
-Below is the code for the bubble between poverty and spendings on education. In the graph we can see the relation between poverty and the child mortality under five within a country. The size of bubbles represent the total population of people living in extreme poverty.
+Below is the code for the bubble between poverty and spendings on education. In the graph we can see the relation between poverty and the child mortality under five years old within a country. The size of bubbles represent the percentage of people living in extreme poverty, to highlight that indicator. We can see that there is a positive relation between child moratility and poverty. This means that a country with a high percentage of people living in poverty also have a higher mortality rate of children under the age of five. 
 
 ```{r}
 #determine size per bubble
@@ -588,7 +603,9 @@ p
 ```
 
 #### Poverty correlates with health outcomes
-People who live in extreme poverty have particularly bad health outcomes. Countries with a low life expectancy (by birth), generally have a high prevelance of extreme poverty. As we can see, there is a clear negative relationship: people tend to live longer in countries where poverty is less common. The bubbles are relative for the extreme poverty headcount. Yet the correlation is far from perfect—some countries such as Madagascar and Congo have a similar poverty headcount but a very different life expectancy.
+People who live in extreme poverty have particularly bad health outcomes. Countries with a low life expectancy (by birth), generally have a high prevelance of extreme poverty. As we can see, there is a clear negative relationship: people tend to live longer in countries where poverty is less common. The bubbles are relative for the extreme poverty headcount. Yet the correlation is far from perfect. Some countries such as Madagascar and Congo have a similar poverty headcount but a very different life expectancy. 
+The highest difference is between the countries Guinea and Iceland with a difference of (82,92 - 57,78 =) 25 years.
+
 ```{r}
 #determine size per bubble
 slope <- 2.8e-6
