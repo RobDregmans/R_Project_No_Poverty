@@ -35,6 +35,7 @@ library(png)      # For grabbing the dimensions of png files
 # Problem introduction
 
 ## Introduction to poverty
+
 The world has committed itself to intensive targets for reducing poverty by 2030. The goal to reduce poverty and its related side effects are specified in Sustainable Development Goal (SDG) number one of the total seventeen SDG's set up in the 2030 Agenda for Sustainable Development. All seventeen goals and quantitative targets are meant to stimulate action over the next fifteen years in areas of critical importance for humanity and the planet [2]. 
 
 ## UN Targets
@@ -70,7 +71,8 @@ The success of the Sustainable Development Goals will be judged on what the data
 Our main research question is twofold. The main part is about constructing a model that predicts poverty for various countries around the world. Besides that, we try to explore the current state of poverty and the distribution of wealth around the world. 
 
 *Our main research question is:*
-*What was the development of poverty around the world since 1990 and can we predict the prevalence of extreme poverty within countries based on a predictive Bayesian model? 
+
+What is the historic trend of poverty around the world since 1990 and can we predict the prevalence of extreme poverty within countries based on a predictive Bayesian model? 
 
 *To answer this research, several sub questions are defined:*
 
@@ -92,11 +94,12 @@ R-studio is used as a tool to perform the data analysis within this research. R 
 
 Our data comes from World Development Indicators database(http://data.worldbank.org/data-catalog/world-development-indicators). On the website we could download the data, WDIData.csv. We focus on one of the UN Sustainable Development Goals: No Poverty. Data of over 1440 indicators of more than 200 countries and regions from 1960 to 2015 are provided in the WDI dataset, but only some of them are relevant to what we want to discuss about.  
 
-We encounter two problems when we try to acquire the data.
+*We encounter two problems when we try to acquire the data.*
 
 First, we narrow down the scope of indicators of the following fields that might be related to ‘No poverty’ goal, this includes the following indicators:
 
 1. Poverty headcount and poverty gap:
+
 -Poverty headcount ratio at national poverty lines (% of population)
 -Rural poverty headcount ratio at national poverty lines (% of rural population)
 -Urban poverty headcount ratio at national poverty lines (% of urban population)
@@ -109,10 +112,13 @@ First, we narrow down the scope of indicators of the following fields that might
 -Poverty gap at national poverty lines (%)
 
 2. Social welfare:
+
 -Coverage of social safety net programs (% of population)
 -Coverage of social insurance programs (% of population)
 
 3. Indicators that we decide to use (life expectation, education and economy)
+
+
 
 Secondly, we choose to start our analysis in a world level to have a first sight into the data, and then focus on some certain countries with data in relatively abnormal trend. 
 
@@ -127,6 +133,7 @@ But in the indicators we choose, a lot of data is missing. We have two solutions
 
 
 ## Loading, choosing and merging the data
+
 After we load the data and using the file encoding type as UTF-8, we make several changes to make the dataset neater. We drop off all the final blank columns which contain no data at all. 
 
 ```{r}
@@ -204,6 +211,7 @@ indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
 ```
 
 ## Reshaping
+
 But for purpose of easier use, we reshape the data into the format that in each row, there’s one value of an indicator in one country of one year, with the columns of country code, region, country name, indicator code, indicator name, year, and the value. This is also known as a wide to long format transformation. We delete the “X” in the name of years, for the potential usage of the scale of time in the temporal distribution in the following part in the report.
 
 ```{r}
@@ -218,10 +226,8 @@ our_indicator_data = merge(country_wdi,our_indicator_data,id = "Country.Code")
 colnames(our_indicator_data)=c("Country.Code","Region","Country.Name","Indicator.Code","Indicator.Name","Year","Value")
 ```
 
-
 And then we make a name list of the countries involved in the subset of indicators we choose. Also, we want to make some analysis on the level of region level, so we extract the 
 name list of the regions as well.
-
 
 ```{r}
 #Obtaining lists for information about regions and countries
@@ -306,12 +312,13 @@ df_bubble=merge(df_bubble_2013_na,df_bubble_2013_na_se,id= "Country.Code", all.x
 ```
 
 # Data exploration
+
 Within chapter 3, we try to answer our research question by means of several sub questions, see section 1.2. This is mainly done by analyzing large datasets and trying to visualize this data by means of appropriate graphs. We try to gain more insight in the state of of poverty around the world.
 
 Firstly, the current state of hunger in the world shall be analyzed by looking at the prevalence of poverty around the world, see section 3.1. Here we will discuss the problem of missing data in terms of estimating the poverty headcount within countries over a longer period. To answer the second research question, we will look at the distribution of wealth by analyzing GINI indexes and Lorenz curves, see section 3.2. For the third research question, we plot several bubble charts and consider correlation between variables in our data, see section 3.3.
 
 
-## The state of poverty in the world
+## The state of poverty around the world
 In this part we choose the indicators of Poverty headcount ratio at $1.90 a day and the total population in the country. We make subset of those indicators and again omit any NA values. Then we calculate the population living under absolute poverty and show it by line graphs.
 
 ```{r}
@@ -334,7 +341,7 @@ wide$absolute = round(wide$absolute,3)
 
 #add hover text
 wide$hover = with(wide, paste( "Year:", Year ,
-                               "<br> World population living in extreme poverty:",absolute,"M",
+                               "<br> World population living in extreme poverty:",absolute,"B",
                                "<br> Share of global population:", SI.POV.DDAY,"%"))
 ```
 
@@ -353,7 +360,7 @@ a <- list(
   showline = T
 )
 b <- list(
-  title = "Number of people living in poverty (1,90$ a day)",
+  title = "Number of people living in poverty (below 1,90$ a day) (billions)",
   showticklabels = TRUE,
   gridwidth = 2,
   showline = T,
@@ -365,7 +372,8 @@ plot_ly(wide, x = ~Year, y = ~absolute, text = ~hover ,type = 'scatter', mode = 
 ```
 
 
-### Distribution over regions
+### Distribution across regions
+
 Here we want to show the poverty gap in different regions. After deleting the rows with only NA value but not any data, we melt it to change the dataset from wide format to long format. Then we draw a stacked line chart based on the subset of data.
 
 ```{r}
@@ -376,7 +384,7 @@ colnames(poverty_gap_data_1990) <- sub("X", "", colnames(poverty_gap_data_1990))
 #remove the rows without any data
 poverty_gap_withoutNA <- poverty_gap_data_1990[-which(rowSums(is.na(poverty_gap_data_1990))>24),]
 #reshape the data for drawing graphs
-poverty_melt = melt(poverty_gap_withoutNA, id=c("Indicator.Code","Indicator.Name","Country.Code", "Country.Name"), value.name = "Year")
+poverty_melt = melt(poverty_gap_withoutNA, id=c("Indicator.Code","Country.Name","Indicator.Name","Country.Code"), value.name = "Year")
 #stacked area graph
 ##poverty line $1.90, six regions in one graph
 regions_melt <- subset(poverty_melt, Country.Name =="East Asia & Pacific" | Country.Name =="Europe & Central Asia"| Country.Name =="Latin America & Caribbean"| Country.Name =="Middle East & North Africa"| Country.Name =="South Asia"| Country.Name =="Sub-Saharan Africa")
@@ -392,7 +400,7 @@ gg <- gg + geom_area(aes(fill=Country.Name))
 #the color of the stacked area
 gg = gg + scale_fill_brewer(palette="Greens", breaks=rev(levels(regions_melt$Country.Name)))
 #label name
-gg <- gg + labs(x="Year", y="Poverty ratio",col="Regions")
+gg <- gg + labs(x="Year", y="Poverty ratio, share of total population per region",col="Regions")
 #label of the legend
 gg <- gg + guides(fill = guide_legend(title = "Region"))
 #remove the background and grid
@@ -402,7 +410,8 @@ gg
 
 ```
 
-### Distribution all over the world
+### Distribution across countries
+
 In the world map we only use the data of populations people in poverty from 2010 to 2015. To deal with the missing data, we choose to use the mean value of 6 years and use it as representative value. By doing that we have more data of population relating to poverty, while keeping the data relatively accurate because we have a pool of data of the past 6 years.
 
 ``` {r}
@@ -459,13 +468,14 @@ k <- plot_geo(df_mean_pov) %>%
             locations = ~Country.Code, 
             marker = list(line = l,color = 'rgb(255,255,255)')) %>%
   
-  colorbar(title = 'Percentage of total population living extreme poverty') %>%
+  colorbar(title = 'Share of population') %>%
   layout(title = 'Prevalance of Extreme Poverty during 2010 - 2015 (below 1.90$ a day)',geo = g)
 k
 ```
 
 
-### Distribution of wealth
+### Multi level poverty and distribution of wealth
+
 The Multidimensional Poverty Index (MPI) published by the Oxford Poverty & Human Development Initiative (OPHI). The MPI is not aggregated at the country level, but at the individual level—it measures how one individual is deprived in different 'poverty' dimensions.
 
 The MPI is constructed from ten indicators across three core dimensions: health, education and living standards. In the following map below, we plotted the share of MPI poor people country by country. The multidimensional poverty index not only uses regular economic indicators such as income, consumption and GINI data, but also non-economic indicators such as nutrition, electricity and schooling. 
@@ -490,10 +500,10 @@ MPIData2016$hover <- with(MPIData2016, paste
                             "<br> Country:", Country,
                             "<br> Share of the pop. in Multi Level Poverty: ", Headcount.ratio ,"%",
                             "<br> Multi Poverty Index:", MPI,
-                            "<br> Child school attendace:", ChildSchoolAttendance))
+                            "<br> Child school attendace:", ChildSchoolAttendance, "%"))
 ```
 
-Using the MPI to map poverty around the world, it provides us with a clearer picture of how prevalent poverty currently is around the globe. As we can see, this alternative metric shows that poverty is also particularly prevalent in sub-Saharan Africa, but also in India and Afghanistan. It is still a limitation that the MPI data relies heavenly on aggregated multi year data. So, it is not possible to track the progress of countries on their MPI for individual years, just like the wolrd map of the prevelance of poverty we plotted over the 5 years average. So, we are still looking for ways to get a better picture of the prevalence of poverty.[8]
+Using the MPI to map poverty around the world, it provides us with a more clear picture of how prevalent poverty currently is around the globe. As we can see, this alternative metric shows that poverty is also particularly prevalent in sub-Saharan Africa, but also in India and Afghanistan. It is still a limitation that the MPI data relies heavenly on aggregated multi year data. So, it is not possible to track the progress of countries on their MPI for individual years, just like the wolrd map of the prevelance of poverty we plotted over the 5 years average. So, we are still looking for ways to get a better picture of the prevalence of poverty [8].
 
 
 ```{r, layout="l-screen-inset", , fig.width=13, fig.height=8}
@@ -513,7 +523,7 @@ k <- plot_geo(MPIData2016) %>%
             locations = ~CountryCode, 
             marker = list(line = l,color = 'rgb(255,255,255)')) %>%
   
-  colorbar(show = F, title = 'Share of population living in MPI',legend = list(x = 100, y = 0.5),legend = list(orientation = 'h')) %>%
+  colorbar(show = F, title = 'Share of population',legend = list(x = 100, y = 0.5),legend = list(orientation = 'h')) %>%
   layout(
     title = 'Share of population per country trapped in multi level poverty',
     geo = g )
@@ -522,6 +532,7 @@ k
 
 
 ### Plotting the Gini indices
+
 Below is the code for plotting the Gini indices for the eight countries with the lowest Gini index according to the data from the world map. The Gini index is a measure for how wealth is distributed in a certain country. The higher the Gini index, the more unequal the wealth is distributed. The theoretical maximum value is nearly 100, where all the wealth is with less than one percent of the population. If the Gini index is 0, it represents complete equality in wealth distribution, so that everyone has the same wealth. In general wealth is measured in income.
 
 ```{r}
@@ -531,11 +542,11 @@ indicator_datagini = subset(indicator_data,indicator_data$Indicator.Code=="SI.PO
 
 # LINE PLOT FOR THE COUNTRIES WITH THE HIGHEST GINI INDEXES
 # extract the right years (25:60 is 1980 till 2015)
-id = indicator_datagini[,c(2:3,4:4, 25:60)]
+id = indicator_datagini[,c(1:3,4:4, 25:60)]
 # remove the 'X' in the columns
 colnames(id) <- sub("X", "", colnames(id))
 # change the format
-idm = melt(id, id=c("Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
+idm = melt(id, id=c("Country.Name", "Indicator.Code","Indicator.Name","Country.Code"), value.name = "Year")
 # throw away the rows with missing data
 idm <- na.omit(idm, cols="value")
 ```
@@ -551,12 +562,13 @@ idmc <- subset(idm,idm$Country.Code %in% cl)
 x <- list( title = "Years" )
 y <- list( title = "Gini Index" )
 m <- list(l=150, r=20, b=70, t=10)
-pline <- plot_ly(idmc, x = ~idmc$variable, y = ~idmc$value, color = ~idmc$Country.Code) %>%
-  add_lines(line = list(shape = "spline"))  %>% layout(xaxis = x, yaxis = y, margin=m)
+pline <- plot_ly(idmc, x = ~idmc$variable, y = ~idmc$value, color = ~idmc$Country.Name) %>%
+  add_lines(line = list(shape = "spline"))  %>% layout( title = 'Gini indexes for poorest countries',xaxis = x, yaxis = y, margin=m)
 pline
 ```
 
 ### Plotting the Lorenz curve
+
 Below is the code for the Lorenz curve of the country with the lowest Gini Index. The Lorenz curve shows the distribution of wealth between the people in a country. Every Lorenzcurve has its own Gini index. The more away the Lorenz curve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed. We can see for example in Lesotho that around 70% of the wealth is with only 40% of the people. We can conclude that in the countries with a high prevalence of poverty there is also a high Gini index. This means that for the poor people in those countries the conditions are even more extreme.
 
 ```{r}
@@ -584,9 +596,11 @@ gini_index_country = Gini(d20)
 
 
 ## Indicators for the model and their relation
+
 Poverty has a strong relation with various outcomes of the society of a country. Therefore, we have explored the data to find variables that are correlated with the prevalence of poverty, and we have plotted them in bubble graphs. These variables shall also be used in our predictive model.
 
 ### Poverty and child mortality
+
 Below is the code for the bubble between poverty and spending on education. In the graph we can see the relation between poverty and the child mortality under five years old within a country. The size of bubbles represents the percentage of people living in extreme poverty, to highlight that indicator. We can see that there is a positive relation between child mortality and poverty. This means that a country with a high percentage of people living in poverty also have a higher mortality rate of children under the age of five. 
 
 ```{r}
@@ -622,8 +636,8 @@ p
 ```
 
 ### Poverty correlates with health outcomes
-Moreover, people who live in extreme poverty also have particularly bad health outcomes. Countries with a low life expectancy (by birth), generally have a high prevalence of extreme poverty. As we can see, there is a clear negative relationship: people tend to live longer in countries where poverty is less common. The bubbles are relative for the extreme poverty headcount. Yet the correlation is far from perfect. Some countries such as Madagascar and Congo have a similar poverty headcount but a very different life expectancy. 
-The highest difference is between the countries Guinea and Iceland with a difference of (82,92 - 57,78 =) 25 years.
+
+Moreover, people who live in extreme poverty also have particularly bad health outcomes. Countries with a low life expectancy (by birth), generally have a high prevalence of extreme poverty. As we can see, there is a clear negative relationship: people tend to live longer in countries where poverty is less common. The bubbles are relative for the extreme poverty headcount. Yet the correlation is far from perfect. Some countries such as Madagascar and Congo have a similar poverty headcount but a very different life expectancy. The highest difference is between the countries Guinea and Iceland with a difference of (82,92 - 57,78 =) 25 years.
 
 ```{r}
 #determine size per bubble
@@ -658,10 +672,12 @@ p
 
 ```
 
-# Model drafting
-Within this chatper, we will select our indicators for the predictive model, see section 4.1. Within section 4.2 we explain the model structure, the data used and the process of estimating the distrubtions for our priors. See section 4.3, for the implementation of our bayesian MCMC model in RJAGS. Within section 4.4, we calibrate our model based on historic data. See section 4.5 for our model output, predicting the poverty headcount based on our indicators. 
+# Model drafting, calibration and implementation 
+
+Within this chatper, we will select our indicators for the predictive model, see section 4.1. Within section 4.2 we explain the model structure, the data used and the process of estimating the distrubtions for our priors. Within 4.3, we explain our data preparation. See section 4.4, for the implementation of our bayesian MCMC model in RJAGS. Within section 4.4, we calibrate our model based on historic data. See section 4.5 for our model output, predicting the poverty headcount based on our indicators. 
 
 ## Selected indicators
+
 From section 3.3, we can observe a correlation between poverty and the prevalence of undernourishment, infant mortality and life expectancy. This indicates that these variables could be used in our predictive MCMC model. To test of the correlation is significant, we explored the correlation between the variables using the “PerformanceAnalytics” library, which has numerous options to calculate and display correlations between variables.
 
 ```{r}
@@ -675,19 +691,16 @@ df_correlation = subset(df_correlation, df_correlation$Year==2012)
 df_correlation = na.omit(df_correlation)
 df_correlation = df_correlation[,c(3:6)]
 
-i = df_correlation$"SP.DYN.IMRT.IN"
-
 cor_table <- cor(df_correlation, method = "pearson")
 cor_table = round(cor_table,2)
-
-install.packages("PerformanceAnalytics")
-chart.Correlation(df_correlation, histogram=TRUE, pch=19)
+suppressWarnings(chart.Correlation(df_correlation, histogram=TRUE, pch=19))
 
 ```
 
 Using this library for the four indicators, the correlation has been calculated. In the plot, the distribution of each variable is shown on the diagonal. On the bottom of the diagonal, the bivariate scatter plots with a fitted line are displayed. On the top of the diagonal, the value of the correlation plus the significance level as stars. Each significance level is associated to a symbol: p-values(0, 0.001:***, 0.01:**, 0.05*). As we can see from the graphs and the p-values, all correlations between the variables are significant. This indicates that these variables could potentially be used as predictors within our model.
  
 ## Model structure
+
 Many causal models can be drafted given the data of our indicators. One causal model is given in figure X below. The model consists of the three indicators mentioned earlier in section 3.3 and section 4.1. Within this, our model will consist off the dependent variable, poverty headcount below $1.90 and undernourishment, life expectancy and undernourishment as independent variables. From our causal model, we can derive a collider structure. We will pick this structure as the main structure of our MCMC model. Within the figure, the correlation statistics of the used predictors are within the figure.  We model a positive relation between the variables undernourishment and infant mortality and poverty. We expect a negative relation between life expectancy and poverty, thus in high poverty countries the life expectancy will be lower.  
 
 ```{r}
@@ -700,11 +713,68 @@ include_graphics(img1_path)
 ```
  
 ### Beta distributions
+
 In statistics, Bayesian linear regression is used as an approach to linear regression in which the analysis is undertaken in the context of Bayesian inference (Kruske). For a Bayesian regression, the form of the prior distribution need to be estimated. Therefore, we need to estimate the distribution of our three indicators.
 
 For our estimate of the distribution of our priors, we used library library(MASS) and library(fitdistrplus). They offer a range of function to plot histograms, estimate distributions and plot them into the histogram. See below for our approach for every individual indicator.
 
+```{r echo=FALSE}
+#DUPLICATED THIS CODE TO RUN OUR FITTING GRAPHS FOR BETA's
+
+############################################################
+#selecting data from wdi
+var_predictors = c("SP.DYN.LE00.IN","SN.ITK.DEFC.ZS","SH.DYN.MORT")
+
+#subset the data with the three predicters
+df_predictors = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_predictors)
+df_predictors = subset(df_predictors, select = c("Indicator.Code","Region","Country.Name", "Country.Code", "Year", "Value"))
+df_predictors = dcast(df_predictors,Country.Code + Region + Country.Name + Year ~ Indicator.Code, value.var ="Value")
+df_predictors = subset(df_predictors, df_predictors$Year==2015)
+df_predictors = df_predictors[-which(rowSums(is.na(df_predictors))> 0),]
+df_predictors = subset(df_predictors, df_predictors$Country.Code %in% all_countries$Country.Code)
+
+#is the script Average poverty 2010 - 2015
+#selecting data from wdi + average of 6 years 2010 - 2015 -----------
+year = c('2010','2011', '2012','2013','2014','2015')
+poverty_average = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% "SI.POV.DDAY")
+poverty_average = subset(poverty_average,poverty_average$Year %in% year)
+poverty_average = subset(poverty_average, select = c("Indicator.Code","Country.Name", "Country.Code", "Year", "Value"))
+#Calculate average over columns
+poverty_average = dcast(poverty_average,Country.Code + Country.Name + Indicator.Code ~ Year, value.var ="Value")
+poverty_average['Mean'] = rowMeans(poverty_average[,4:9],na.rm = T)
+poverty_average = poverty_average[,c(1:2,10:10)]
+#dropping zero's and NA's
+poverty_average = na.omit(poverty_average)
+poverty_average = poverty_average[apply(poverty_average!=0, 1, all),]
+### ------------------------------------------------------------------
+
+#combine the poverty dataframe with the predictors dataframe
+poverty_JAGS = subset(poverty_average,poverty_average$Country.Code %in% df_predictors$Country.Code)
+predictors_JAGS = subset(df_predictors,df_predictors$Country.Code %in% poverty_average$Country.Code)
+df_jags_year = cbind(predictors_JAGS,poverty_JAGS$Mean)
+
+#Select the predictors and the predicted value from the dataframe
+poverty = df_jags_year$`poverty_JAGS$Mean`
+life_expacteny = df_jags_year$SP.DYN.LE00.IN
+undernourishment = df_jags_year$SN.ITK.DEFC.ZS
+child_mortality = df_jags_year$SH.DYN.MORT
+n = nrow(df_jags_year)
+
+#standardize the values
+y <- poverty
+x1 <- undernourishment
+x2 <- child_mortality
+x3 <- life_expacteny
+y  <- (y-mean(y))/sd(y)
+x1 <- (x1-mean(x1))/sd(x1)
+x2 <- (x2-mean(x2))/sd(x2)
+x3 <- (x3-mean(x3))/sd(x3)
+############################################################
+
+```
+
 ### Undernourishment
+
 In the figure below, a histogram of the undernourishment have been given. The histogram indicates an exponential distribution. When we fit this distribution using fitdistr (from the imported library) and plot this back in to the histogram, the red line is being created showing the shape of the real data. We see that especially that the high amount countries with a rather low undernourishment is not that well represented within the fitted distribution. For the higher values of undernourishment within our data, the fitted distribution actually follows the observed data rather well, thus accepting the fitted data for our beta2 distribution. 
 
 ```{r}
@@ -715,6 +785,7 @@ curve(dexp(x,0.082936680,log = FALSE), col="red", lwd=2, add=T)
 ```
 
 ### Child mortality
+
 In the figure below, a histogram of the child mortality have been plotted. The histogram once again indicates an exponential distribution. When we try to fit this distribution, we end up with a distribution represented by the red line, see the figure below.
 
 ```{r}
@@ -724,6 +795,7 @@ curve(dexp(x,0.031210986,log = FALSE), col="red", lwd=2, add=T)
 ```
 
 ### Life expectancy
+
 In the figure below, a histogram of the life expectancy have been given. The histogram indicates an skew normal distribution or Weibull distribution.  When we try to fit a Weibull curve, we estimate the following distribution, see the red line in the graph. We see that especially that the high density of countries with a high life expectancy is not that well represented within the fitted distribution. But for the total range, this Weibull distribution follows the provided data well, thus also accepting this distribution for our prior beta4. 
 
 ```{r}
@@ -733,6 +805,7 @@ curve(dweibull(x,14.74,74.7498634,log = FALSE), col="red", lwd=2, add=T)
 ```
 
 ## Data preparation
+
 To run the jags model a dataframe has been created with the four indicators: poverty, infant mortality, undernourishment and life expectancy. This dataframe may not contain NA-values. In order to get a dataframe first a dataset for the predictors have been created for the year 2015. Without the NA-values it contains data for 160 countries. Because of the lack of data on the share of the population living under the extreme poverty line ($1.90 a day). When we had used the poverty data from 2015 we could have a dataset containing only 20 countries. The dataset is made which contains the average share of a country between 2011-2015. This dataset contains the mean on the extreme poverty line for 138 countries. 
 
 For the JAGS model these two datasets have been merged. This merged dataset, after omitting the NA-values, contains information for 113 countries. The indicators present in the dataset have to be standardized values in order to compare them in the model. Values can be standardized using the following function: y = (y-mean(y)) / standard deviation(y). Now the values are standardized we’re able to run a JAGS model with this dataset. 
@@ -791,6 +864,7 @@ x3 <- (x3-mean(x3))/sd(x3)
 ```
 
 ## Model implementation in RJAGS
+
 The JAGS model is based on the collider model provided in the course TPM-EPA1315. The causal model is specified in the likelihood functions. The prior for the beta’s is set with the distributions given in 4.2.1. For beta1 a normal distribution is used, because no distribution can be predicted for this beta. The prior of the variance uses a uniform distribution between 0 and 0.1 as has been provided in the JAGS model. For the variance, we consider that no prior knowledge is available about the distribution of the variance of the indicators in our model. In order get a certain range of the predicted values we have chosen for this uniform distribution. The JAGS model implemented in R can be seen below.
 
 ```{r}
@@ -817,20 +891,8 @@ sigma1     <-  sqrt(var1)
 ```
 
 ## Model calibration
-In section 4.4, we have set up our input data for the bayesian model using MCMC. Now it is time to calibrate our parameters so that we can use our predictive model to estimate the poverty for different years based on our indicator data. We calibrate our model using the average over  6 years. The use of aggregated data is a limitation of this research, but we are forced to do this because of the missing data.
 
-We runned the model, using the data input and distributions, while using a burn-in period of 10000 samples. In the ACF plot strong autocorrelations can be seen. All trace plots cover the same space. The parameter mix well through the parameter spaces and the beginning and ends look the same. This all indicates that we have estimate reasonably parameters. Our Gelman plots indicates that there is more variance between the chains then there is within. But the statistics are near one and are converged. The Gelman plot can be improved when the variance between the chains is smaller then the variance within the chains. 
-
-The density plots show different outputs. For beta1 and sigma1 the density plot shows that there are very different densities by chain. While if you look at the density plots of the other beta’s the densities are the same regardless of the chain. It shows us that we have a good distribution chosen for our estimated beta’s. Due to complexity reason, ror beta1 and sigma1 we have not specified a specific distribution. The negatively affects our output which can be seen in the corresponding density plot of Sigma1 and beta 1.
-
-## Model Summary
-Our model summary output graph can be seen below. For all the beta’s and sigma1 the mean, standard deviation and standard errors are given. As well as quantiles for each variables. The quantiles show us that the infant mortality is a very good predictor. Also the other predictors chosen predict really good, but less than infant mortality. Furthermore, the variance of our model is relatively low (around 0.3). 
-
-Now the model summary has been explained, we’re interested in how the model is predicting. The plot below shows us the actual values compared to the predicted values. There can be seen that the model is predicting quite well until values within two standard deviations. For values higher then two standard deviations, the model is not predicting quite accurate. Generally, higher values for poverty are estimated 1-1.5 sd’s to low. This is probably because of the mismatch between the real data on poverty and the estimated beta1 and sigma1 for the predicted value of poverty, as discussed in section 4.5.1.
-
-## Model results 
-We can conclude our model is predicting rather well. Our model is usable to predict the value of poverty for all the countries where the data on this indicators is provided by the World Bank dataset. As explained before, this dataset contains 160 countries. To use the indicator dataset, we standardise the values first, thereafter we use the model output to predict the values for poverty. The output gives us a standardised value. By using the mean and standard deviation of poverty we get the actual predicted values for poverty. This is shown in the dataframe created. 
-
+In section 4.4, we have set up our input data for the bayesian model using MCMC. Now it is time to calibrate our parameters so that we can use our predictive model to estimate the poverty for different years based on our indicator data. We calibrate our model using the average over 6 years. The use of aggregated data is a limitation of this research, but we are forced to do this because of the missing data.
 
 ```{r}
 model <- jags.model(textConnection(model_string), data = list(y=y, x1=x1,x2=x2,x3=x3,n=n),n.chains = 4)
@@ -843,7 +905,9 @@ samp <- coda.samples(model,
 
 saveRDS(samp,"modelrun.rds")
 ```
+We ran the model, using the data input and distributions, while using a burn-in period of 10000 samples. In the ACF plot below, strong autocorrelations can be seen. All trace plots cover the same space. The parameter mix well through the parameter spaces and the beginning and ends look the same. This all indicates that we have estimate reasonably parameters. Our Gelman plots indicates that there is more variance between the chains then there is within. But the statistics are near one and are converged. The Gelman plot can be improved when the variance between the chains is smaller then the variance within the chains. 
 
+The density plots below, show different outputs. For beta-1 and sigma-1 the density plot shows that there are very different densities by chain. While if you look at the density plots of the other beta’s the densities are the same regardless of the chain. It shows us that we have a good distribution chosen for our estimated beta’s. Due to complexity reason, ror beta1 and sigma1 we have not specified a specific distribution. The negatively affects our output which can be seen in the corresponding density plot of sigma-1 and beta-1.
 
 ```{r}
 #summary + plots
@@ -854,9 +918,36 @@ gelman.plot(samp)
 densplot(samp)
 acfplot(samp)
 effectiveSize(samp)
+
+sampmatrix = as.matrix(samp)
+# take the first four parameters, but drop off the noise!
+param <-sampmatrix[sample(nrow(sampmatrix),size = 100, replace=FALSE),1:4]
+# create a design matrix
+n <- nrow(df_jags_year)
+# make an intercept
+intercept <- rep(1,n)
+# bind your data together in the order used for modelling
+data <- cbind(intercept,x1,x2,x3)
+pred <- param %*% t(data)
+pred <- t(pred)
+# replicate the results
+act <- rep(y,100)
+par(mar=c(1,1,1,1))
+plot(act,pred,xlab="Actual",ylab="Predicted")
 ```
 
+## Model Summary
+
+Our model summary output graph can be seen above. For all the beta’s and sigma-1 the mean, standard deviation and standard errors are given. As well as quantiles for each variables. The quantiles show us that the infant mortality is a very good predictor. Also the other predictors chosen predict really good, but less than infant mortality. Furthermore, the variance of our model is relatively low (around 0.3). 
+
+Now the model summary has been explained, we’re interested in how the model is predicting. The plot above shows us the actual values compared to the predicted values. There can be seen that the model is predicting quite well until values within two standard deviations. For values higher then two standard deviations, the model is not predicting quite accurate. Generally, higher values for poverty are estimated 1-1.5 sd’s to low. This is probably because of the mismatch between the real data on poverty and the estimated beta1 and sigma1 for the predicted value of poverty, as discussed in section 4.5.1.
+
+## Model results 
+
+We can conclude our model is predicting rather well. Our model is usable to predict the value of poverty for all the countries where the data for this indicators is provided by the World Bank dataset. As explained before, 160 countries do meet this requirement. To use the indicator dataset, we standardise the values first, thereafter we use the model output to predict the values for poverty. The output gives us a standardised value. By using the mean and standard deviation of poverty we get the actual predicted values for poverty.
+
 ## Using the model - predicting poverty
+
 We used our calibrated parameters from section 4.4 and 4.5 to estimate the poverty headcount for all countries with data available for the three independent variables. For a total of 160 countries, data is available for these countries. When we execute the predictive model, we get some very reasonable output, see the world map below.
 
 Within dataframe predicted poverty, the model stores the output of the model. When we look at the recalculated values from the standardized output, we see that especially African and Asian countries get relative high predicted poverty headcounts. As earlier seen in our model calibration section, predicted values for high poverty countries are estimated rather low compared to the actual share of extreme poverty in those countries. 
@@ -913,12 +1004,9 @@ predicted_poverty$poverty = (predicted_poverty$score * sd(poverty)) + mean(pover
 
 ```
 
-When we plot the calculated real poverty values inside a wordmap, we get the figure below. For the Western European countries and North America, the model estimate the share of total population living in extreme poverty rather high, due to the large range of uncertainty in our model. Across the board, we see that for countries that do have high poverty rates recorded in historic data, the model rather well predicts a high poverty rate for those countries. For example countries like the Central Africa Republic and Madagascar have high predicted poverty rates. These kind of results are satisfying, we can conclude that the constructed bayesian model can predict poverty to some extent, while taking into consideration the large range of uncertainty that is embedded in our MCMC model. 
+When we plot the calculated real poverty values inside a wordmap, we get the figure below. For the Western European countries and North America, the model estimate the share of total population living in extreme poverty rather high, due to the large range of uncertainty in our model. Across the board, we see that for countries that do have high poverty rates recorded in historic data, the model rather well predicts a high poverty rate for those countries. For example countries like the Central Africa Republic and Madagascar have high predicted poverty rates. These kind of results are satisfying. We can conclude that the constructed bayesian model can predict poverty to some extent, while taking into consideration the large range of uncertainty that is embedded in our MCMC model. 
 
 ```{r, layout="l-screen-inset", , fig.width=13, fig.height=8}
-
-
-
 # light grey boundaries
 l <- list(color = toRGB("grey"), width = 0.5)
 
@@ -941,24 +1029,28 @@ k <- plot_geo(predicted_poverty) %>%
             locations = ~Country.Code, 
             marker = list(line = l,color = 'rgb(255,255,255)')) %>%
   
-  colorbar(title = 'Range of share of total population living extreme poverty predicted by our model') %>%
+  colorbar(title = 'Predicted share') %>%
   layout(title = 'Predicted prevelance of extreme poverty for 2015, based on model',geo = g)
 k
 ```
+
 # Evaluation
+
 Insights gained from the figures and graphs is useful because they play an important role in assissting policy makers and project implementers by revealing the poverty trend in the world, the potential causes of poverty, and thus helping evaluating the efforts put in targeting poverty alleviation.
 
 The objectives of this report are: (1) to explore the spatial and temporal distribution of poverty and inequality at the regional and national level, (2) to show the strong correlation between children mortality, health outcomes and poverty, (3) to estimate how the level of poverty will be reduced or boosted  based on data in education, mortality at national level.
 
 ## Insufficiency of model
+
 In our model, due to the limitation of the quality and the quantity of data, the model has certain level of insufficiency. First, we could only use the indicators which satisfy the two following standards: it has relatively more “complete” data than the within the time period of 1990-2015, and it must have certain level correlation with poverty, which limits our choice on predictors in the Bayesian regression model. Second, our parameter setting of beta1 and sigma1 also has inaccuracy. The distribution model of our priors do not completely obey the uniform distribution or Weibull distribution, but still we assume they do, which contributes to potential inaccuracy in the estimated poverty data.
 
 ## How would we communicate our findings to decision makers?
+
 According to the world map that we made, we show the spatial distribution of the people suffering from the poverty and the countries in two aspects: people living under extreme poverty line and the countries trapped in the multi level poverty. These graphs could help revealing where the poverty locates and make it more accurate when providing the assistance to alleviate the poverty. And also with the regression model we could estimate the poverty trend by data related to health conditions of the people.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
-#### Resources
+#### Resources 
+
 [1] https://www.globalgoals.org/1-no-poverty
 [2] https://sdgcompass.org/sdgs/sdg-1
 [3] https://ourworldindata.org/extreme-poverty
