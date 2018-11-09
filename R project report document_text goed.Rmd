@@ -9,11 +9,12 @@ output:
     number_sections: true  ## if you want number sections at each table header
     theme: united  # many options for theme, this one is my favorite.
     highlight: tango  # specifies the syntax highlighting style
+    fig_caption: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "C:/Users/ivarnieuwepc/Documents/GitHub/data")
+knitr::opts_knit$set(root.dir = "C:/Users/rob/Documents/GitHub/data")
 knitr::opts_chunk$set(comment=NA, fig.align = "center")
 library(reshape)
 library(reshape2)
