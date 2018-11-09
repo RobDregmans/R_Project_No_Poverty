@@ -259,7 +259,7 @@ df_bubble_2013$TotalPopPov = df_bubble_2013$SI.POV.DDAY * df_bubble_2013$SP.POP.
 colnames(df_bubble_2013) = c("Country.Code", "Country.Name","Region","Year","ChildMort", "Poverty","TotalPop","TotalPopPov")
 ```
 
-In this chart we only want to discuss at the national level instead of at regional level, so we exclude all the regional data as well as any NA value. And then we fix the data to the format with no decimals.
+In this chart we only want to discuss at the national level instead of at regional level, so we exclude all the regional data as well as any NA value. And then we fix the data to the format with two decimals.
 
 ```{r}
 #omit NA's
@@ -526,7 +526,6 @@ k
 
 #### Plotting the gini indices
 Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map. The Gini index is a measure for how wealth is distributed in a certain country. The higher the Gini index, the more inequal the wealth is distributed. The theoratical maximum value is nearly 100, where all the wealth is with less than one percent of the population. If the Gini index is 0, it represents complete equality in wealth distribution, so that everyone has the samen wealth. In general wealth is measured in income.
-
 
 ```{r}
 #CODE FOR THE GINI INDICES
