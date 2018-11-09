@@ -1,6 +1,11 @@
 ---
 title: "R Project Report"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    toc_float: true:
+      collapsed: false
 ---
 
 ```{r setup, include=FALSE}
@@ -313,7 +318,8 @@ Firstly, the current state of hunger in the world shall be analysed by looking a
 
 
 ### 3.1 The state of poverty in the world
-code
+In this part we choose the indicators of Poverty headcount ratio at $1.90 a day and the total population in the country. We make subset of those indicators and again omit any NA values. Then we calculate the polulation living under absolute poverty and show it by line graphs.
+
 ```{r}
 #FOR THE LINECHART ABOUT ABSOLUTE POVERTY
 world = c("WLD")
@@ -366,7 +372,7 @@ plot_ly(wide, x = ~Year, y = ~absolute, text = ~hover ,type = 'scatter', mode = 
 
 
 #### Distribution over regions
-code for stacked line graph
+Here we want to show the poverty gap in different regions. After deleting the rows with only NA value but not any data, we melt it to change the dataset from wide format to long format. Then we draw a stacked line chart based on the subset of data.
 
 ```{r}
 poverty_gap_data <- subset(mydata,mydata$Indicator.Code=="SI.POV.GAPS")
@@ -402,7 +408,8 @@ gg
 
 ```
 
-Code for worldmap
+#### Distribution all over the world
+In the worldmap we only use the data of populations people in poverty from 2010 to 2015. To deal with the missing data, we choose to use the mean value of 6 years and use it as representative value. By doing that we have more data of population relating to poverty, while keeping the dtaa relatively acurate because we have a pool of data of the past 6 years.
 
 ``` {r}
 knitr::opts_chunk$set(echo = TRUE)
@@ -469,8 +476,7 @@ The Multidimensional Poverty Index (MPI) published by the Oxford Poverty & Human
 
 The MPI is constructed from ten indicators across three core dimensions: health, education and living standards. In the following map below, we plotted the share of MPI poor people country by country. The multidimensional poverty index not only uses regular economic indicators such as income, consumption and GINI data, but also non-economic indicators such as nutrition, electricity and schooling. 
 
-
-code documentation for code below
+We choose only the data related to multi level poverty and we omit the last several columns without any data. Also we make an information table of which occurs when we put out mouse on a country and shows more related information on the country,such as country name, multi poverty index and child school attendance.
 
 ```{r}
 #Selecting MDI Data, drop last 3 columns with no values
