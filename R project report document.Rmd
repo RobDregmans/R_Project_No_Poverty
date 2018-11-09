@@ -95,6 +95,7 @@ Our data comes from World Development Indicators database(http://data.worldbank.
 And two problems has encountered when we try to acquire the data.
 
 First, we narrow down the scope of indicators of the following fields that might be related to ‘No poverty’ goal:
+
 1. Poverty headcount and poverty gap:
 -Poverty headcount ratio at national poverty lines (% of population)
 -Rural poverty headcount ratio at national poverty lines (% of rural population)
@@ -106,9 +107,11 @@ First, we narrow down the scope of indicators of the following fields that might
 -Poverty gap at $3.20 a day (2011 PPP) (%)
 -Poverty gap at $5.50 a day (2011 PPP) (%)
 -Poverty gap at national poverty lines (%)
+
 2. Social welfare:
 -Coverage of social safety net programs (% of population)
 -Coverage of social insurance programs (% of population)
+
 3. Indicators that we decidede to use (life expectation, education,economy)
 
 Secondly, we choose to start our analysis in a world level to have a first sight into the data, and then focus on some certain countries with data in relatively abnormal trend. 
@@ -118,14 +121,11 @@ Thirdly, we use the data from 1990 to 2015. The number of people living in extre
 Last, we want to predict the missing data on poverty with our regression model using predictors of life expectancy, education, and mortality of infants, and with the data we will get a fuller picture of how the poverty will be reduced in the future.
 
 2.Data Description and quality problem 
-We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis that social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scales of both social science and economy so that we could look into the properties of poverty with a broader scope. 
-*Missing part: Quantity of the data:*
-But in the indicators we choose, a lot of data is missing. We have two solutions on the missing data. Strategy one is to drop off the data with a lot of missing part. The other way is more…
-*What do we do with the missing data:*
-For the world map, 
 
-Also, we try to make a multiple regression model based on Baye’s rule using the predictors we choose, again within the predictors there are lot of missing data(i.e. NA in the predictor education). *how many missing data are there*
-To deal with the problem, …
+We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis that social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scales of both social science and economy so that we could look into the properties of poverty with a broader scope. 
+But in the indicators we choose, a lot of data is missing. We have two solutions on the missing data. The first solution is to drop off the data with missing part. The other way is to estimate the missing data with our regression model.
+
+
 - Data preparation  how did we modify the data to properly use it 
 1.Loading, choosing data we need and merging
 Here we make a list of name of data in the fields that we are interested in, merge them in to one single longer list and make a subset of the data we want.
@@ -636,8 +636,13 @@ Here:
 
 ## 5 evaluation
 - evaluation
+Insights gained from the figures and graphs  is useful because they play an important role in assissting policy makers and project implementers by revealing the poverty trend in the world, the potential causes of poverty, and thus helping evaluating the efforts put in targeting poverty alleviation.
+
+
 -	Discuss research findings to quality of the model, quality of the data. 
+
 -	How could the model be improved  suggest next steps
+
 ## 6 development
 	- Can we predict future behaviour/Guide additional policy
 	- How would we communicate our findings to decision makers? 
