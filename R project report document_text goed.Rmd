@@ -1,6 +1,6 @@
 ---
 title: "R Project Report"
-authors: "Rob Dregmans, Ivar Tjallinga, Martijn van Vliet, Ying XU"
+author: "Rob Dregmans, Ivar Tjallingii, Martijn van Vliet, Ying XU"
 date: "November 9, 2018"
 output: 
   html_document:
@@ -13,7 +13,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "C:/Users/rob/Documents/GitHub/data")
+knitr::opts_knit$set(root.dir = "C:/Users/ivarnieuwepc/Documents/GitHub/data")
 knitr::opts_chunk$set(comment=NA, fig.align = "center")
 library(reshape)
 library(reshape2)
@@ -23,9 +23,15 @@ library(plotly)
 library(ineq)
 library(ggplot2)
 library(rjags)
+library(MASS)
+library(fitdistrplus)
+library(PerformanceAnalytics)
+library(knitr)    # For knitting document and include_graphics function
+library(png)      # For grabbing the dimensions of png files
+
 ```
 
-# Problem analysis
+# Problem introduction
 
 ## Introduction to poverty
 The world has committed itself to intensive targets for reducing poverty by 2030. The goal to reduce poverty and its related side effects are specified in Sustainable Development Goal (SDG) number one of the total seventeen SDG's set up in the 2030 Agenda for Sustainable Development. All seventeen goals and quantitative targets are meant to stimulate action over the next fifteen years in areas of critical importance for humanity and the planet [2]. 
@@ -664,7 +670,85 @@ p
 
 ```
 
-# Model 
+# Moddeling poverty using MCMC and Bayesian inference
+Within this chatper, we will select our indicators for the predictive model, see section 4.1. Within section 4.2 we explain the model structure, the data used and the process of estimating the distrubtions for our priors. See section 4.3, for the implementation of our bayesian MCMC model in RJAGS. Within section 4.4, we calibrate our model based on historic data. See section 4.5 for our model output, predicting the poverty headcount based on our indicators. 
+
+## Selected indicators
+From section 3.3, we can observe a correlation between poverty and the prevalence of undernourishment, infant mortality and life expectancy. This indicates that these variables could be used in our predictive MCMC model. To test of the correlation is significant, we explored the correlation between the variables using the “PerformanceAnalytics” library, which has numerous options to calculate and display correlations between variables.
+
+```{r}
+var_correlation = c("SI.POV.DDAY","SP.DYN.LE00.IN","SN.ITK.DEFC.ZS","SH.DYN.MORT")
+
+#subset the data with only the world and the two indicators above about population and people in poverty in %
+df_correlation = subset(our_indicator_data,our_indicator_data$'Indicator.Code' %in% var_correlation)
+df_correlation = subset(df_correlation, select = c("Indicator.Code", "Country.Code", "Year", "Value"))
+df_correlation = dcast(df_correlation,Country.Code + Year ~ Indicator.Code, value.var ="Value")
+df_correlation = subset(df_correlation, df_correlation$Year==2012)
+df_correlation = na.omit(df_correlation)
+df_correlation = df_correlation[,c(3:6)]
+
+i = df_correlation$"SP.DYN.IMRT.IN"
+
+cor_table <- cor(df_correlation, method = "pearson")
+cor_table = round(cor_table,2)
+
+install.packages("PerformanceAnalytics")
+chart.Correlation(df_correlation, histogram=TRUE, pch=19)
+
+```
+
+Using this library for the four indicators, the correlation has been calculated. In the plot, the distribution of each variable is shown on the diagonal. On the bottom of the diagonal, the bivariate scatter plots with a fitted line are displayed. On the top of the diagonal, the value of the correlation plus the significance level as stars. Each significance level is associated to a symbol: p-values(0, 0.001:***, 0.01:**, 0.05*). As we can see from the graphs and the p-values, all correlations between the variables are significant. This indicates that these variables could potentially be used as predictors within our model.
+ 
+### Model structure
+Many causal models can be drafted given the data of our indicators. One causal model is given in figure X below. The model consists of the three indicators mentioned earlier in section 3.3 and section 4.1. Within this, our model will consist off the dependent variable, poverty headcount below $1.90 and undernourishment, life expectancy and undernourishment as independent variables. From our causal model, we can derive a collider structure. We will pick this structure as the main structure of our MCMC model. Within the figure, the correlation statistics of the used predictors are within the figure.  We model a positive relation between the variables undernourishment and infant mortality and poverty. We expect a negative relation between life expectancy and poverty, thus in high poverty countries the life expectancy will be lower.  
+
+```{r}
+
+img1_path <- "Drawing1.png"
+img1 <- readPNG(img1_path, native = TRUE, info = TRUE)
+attr(img1, "info")
+
+include_graphics(img1_path)
+```
+ 
+#### Beta distributions
+In statistics, Bayesian linear regression is used as an approach to linear regression in which the analysis is undertaken in the context of Bayesian inference (Kruske). For a Bayesian regression, the form of the prior distribution need to be estimated. Therefore, we need to estimate the distribution of our three indicators.
+
+For our estimate of the distribution of our priors, we used library library(MASS) and library(fitdistrplus). They offer a range of function to plot histograms, estimate distributions and plot them into the histogram. See below for our approach for every individual indicator.
+
+**Undernourishment**
+In the figure below, a histogram of the undernourishment have been given. The histogram indicates an exponential distribution. When we fit this distribution using fitdistr (from the imported library) and plot this back in to the histogram, the red line is being created showing the shape of the real data. We see that especially that the high amount countries with a rather low undernourishment is not that well represented within the fitted distribution. For the higher values of undernourishment within our data, the fitted distribution actually follows the observed data rather well, thus accepting the fitted data for our beta2 distribution. 
+
+```{r}
+fit1 <- fitdistr(df_jags_year$SN.ITK.DEFC.ZS, densfun="exponential")  # we assume my_data ~ Normal(?,?)
+hist(df_jags_year$SN.ITK.DEFC.ZS, pch=20, breaks=15, prob=TRUE, main="")
+curve(dexp(x,0.082936680,log = FALSE), col="red", lwd=2, add=T)
+
+```
+
+**Child mortality**
+In the figure below, a histogram of the child mortality have been plotted. The histogram once again indicates an exponential distribution. When we try to fit this distribution, we end up with a distribution represented by the red line, see the figure below.
+
+```{r}
+fit3 <- fitdistr(df_jags_year$SH.DYN.MORT, densfun="exponential")  # we assume my_data ~ Normal(?,?)
+hist(df_jags_year$SH.DYN.MORT, pch=20, breaks=15, prob=TRUE, main="")
+curve(dexp(x,0.031210986,log = FALSE), col="red", lwd=2, add=T)
+```
+
+**Life expectancy**
+In the figure below, a histogram of the life expectancy have been given. The histogram indicates an skew normal distribution or Weibull distribution.  When we try to fit a Weibull curve, we estimate the following distribution, see the red line in the graph. We see that especially that the high density of countries with a high life expectancy is not that well represented within the fitted distribution. But for the total range, this Weibull distribution follows the provided data well, thus also accepting this distribution for our prior beta4. 
+
+```{r}
+fit2 <- fitdistr(df_jags_year$SP.DYN.LE00.IN, densfun="Weibull")  # we assume my_data ~ Normal(?,?)
+hist(df_jags_year$SP.DYN.LE00.IN, pch=20, breaks=15, prob=TRUE, main="")
+curve(dweibull(x,14.74,74.7498634,log = FALSE), col="red", lwd=2, add=T)
+```
+
+### Data preparation
+To run the jags model a dataframe has been created with the four indicators: poverty, infant mortality, undernourishment and life expectancy. This dataframe may not contain NA-values. In order to get a dataframe first a dataset for the predictors have been created for the year 2015. Without the NA-values it contains data for 160 countries. Because of the lack of data on the share of the population living under the extreme poverty line ($1.90 a day). When we had used the poverty data from 2015 we could have a dataset containing only 20 countries. The dataset is made which contains the average share of a country between 2011-2015. This dataset contains the mean on the extreme poverty line for 138 countries. 
+
+For the JAGS model these two datasets have been merged. This merged dataset, after omitting the NA-values, contains information for 113 countries. The indicators present in the dataset have to be standardized values in order to compare them in the model. Values can be standardized using the following function: y = (y-mean(y)) / standard deviation(y). Now the values are standardized we’re able to run a JAGS model with this dataset. 
+
 
 ```{r}
 
@@ -716,6 +800,12 @@ x1 <- (x1-mean(x1))/sd(x1)
 x2 <- (x2-mean(x2))/sd(x2)
 x3 <- (x3-mean(x3))/sd(x3)
 
+```
+
+## Model implementation in RJAGS
+The JAGS model is based on the collider model provided in the course TPM-EPA1315. The causal model is specified in the likelihood functions. The prior for the beta’s is set with the distributions given in 4.2.1. For beta1 a normal distribution is used, because no distribution can be predicted for this beta. The prior of the variance uses a uniform distribution between 0 and 0.1 as has been provided in the JAGS model. For the variance, we consider that no prior knowledge is available about the distribution of the variance of the indicators in our model. In order get a certain range of the predicted values we have chosen for this uniform distribution. The JAGS model implemented in R can be seen below.
+
+```{r}
 #Our model
 model_string <- "model{
 
@@ -736,7 +826,11 @@ var1       ~   dunif(0,0.1)  #poverty
 inv.var1   <-  1/var1
 sigma1     <-  sqrt(var1)
 }"
+```
 
+## Model calibration
+
+```{r}
 model <- jags.model(textConnection(model_string), data = list(y=y, x1=x1,x2=x2,x3=x3,n=n),n.chains = 4)
 
 update(model, 10000, progress.bar="none"); # Burn-in for 10000 samples
@@ -746,7 +840,10 @@ samp <- coda.samples(model,
                      n.iter=20000, progress.bar="text")
 
 saveRDS(samp,"modelrun.rds")
+```
 
+
+```{r}
 #summary + plots
 summary(samp)
 traceplot(samp)
@@ -755,9 +852,14 @@ gelman.plot(samp)
 densplot(samp)
 acfplot(samp)
 effectiveSize(samp)
+```
 
+
+## Model results: predicting poverty
+
+
+```{r}
 ###---- Predicting ----------------------------------------------------------
-
 sampmatrix = as.matrix(samp)
 # take the first four parameters, but drop off the noise!
 param <-sampmatrix[sample(nrow(sampmatrix),size = 100, replace=FALSE),1:4]
@@ -807,12 +909,41 @@ names(predicted_poverty) <- c("Country.Code","Country.Name","score")
 predicted_poverty$poverty = (predicted_poverty$score * sd(poverty)) + mean(poverty)
 
 ```
-Here: 
-  - Correlation of predictors vs. output X and Y
-  - Fitting of distributions --> curve fitting histrograms
-  - structure of RJAGS model
-  - Calibration of RJAGS model
-  - Prediction of Rjags model
+
+**filling in the world map**
+
+We displayed our model output within the world, see below. 
+```{r, layout="l-screen-inset", , fig.width=13, fig.height=8}
+
+
+
+# light grey boundaries
+l <- list(color = toRGB("grey"), width = 0.5)
+
+predicted_poverty$hover <- with(predicted_poverty, paste
+                              ( "Predicted year: 2015",'<br>',
+                                "Predicited share under extreme poverty line:",poverty,"%" ,'<br>',
+                                "Country:", Country.Name))
+
+# specify map projection/options
+g <- list(
+  showframe = F,
+  resolution = 5,
+  showcoastlines = T,
+  countrycolor = toRGB("grey"),
+  coastlinecolor = toRGB("grey"),
+  projection = list(type = 'Mercator'))
+
+k <- plot_geo(predicted_poverty) %>%
+  add_trace(z = ~poverty,text = ~hover, color = ~poverty, colors= 'Reds', 
+            locations = ~Country.Code, 
+            marker = list(line = l,color = 'rgb(255,255,255)')) %>%
+  
+  colorbar(title = 'Range of share of total population living extreme poverty predicted by our model') %>%
+  layout(title = 'Predicted prevelance of extreme poverty for 2015, based on model',geo = g)
+k
+```
+## Predicting  
 
 
 # Evaluation
