@@ -1,11 +1,14 @@
 ---
 title: "R Project Report"
+authors: "Rob Dregmans, Ivar Tjallinga, Martijn van Vliet, Ying XU"
+date: "November 9, 2018"
 output: 
   html_document:
-    toc: true
-    number_sections: true
-    toc_float: true:
-      collapsed: false
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    theme: united  # many options for theme, this one is my favorite.
+    highlight: tango  # specifies the syntax highlighting style
 ---
 
 ```{r setup, include=FALSE}
@@ -22,14 +25,12 @@ library(ggplot2)
 library(rjags)
 ```
 
-### Report storyline
+# Problem analysis
 
-## 1 Problem analysis
-
-### 1 Introduction to poverty
+## Introduction to poverty
 The world has committed itself to intensive targets for reducing poverty by 2030. The goal to reduce poverty and its related side effects are specified in Sustainable Development Goal (SDG) number one of the total seventeen SDG's set up in the 2030 Agenda for Sustainable Development. All seventeen goals and quantitative targets are meant to stimulate action over the next fifteen years in areas of critical importance for humanity and the planet [2]. 
 
-### 1.1 UN Targets
+## UN Targets
 
 The negative effects of poverty are enormous. Poverty and related effects slow down development within whole countries. Certain groups are disproportionately represented and face additional constraints, such as limited access to resources and capabilities in escaping poverty. These include women, persons with disabilities, children, and indigenous peoples.
 
@@ -43,7 +44,7 @@ The negative effects of poverty are enormous. Poverty and related effects slow d
 
 -	Target 5: By 2030, build the resilience of the poor and those in vulnerable situations.
 
-### 1.2 The role of data in battling poverty
+## The role of data in battling poverty
 
 To mobilise resources to overcome inequalities between developed and developing countries data is needed. Data is widely used within decision-making and forms the raw material for accountability of policies. Today, in the private sector, analysis of big data is common for example with consumer profiling and personalised services. Similar techniques are being adopted to gain real-time insights into people’s wellbeing and to target aid interventions to vulnerable groups [2]. Sources of data, if applied responsibly, can enable more evidence-based decision-making, hereby contributing to making progress on the Sustainable Development Goals (SDGs) [1].
 
@@ -53,11 +54,11 @@ What is even more striking, is that one third of these countries are in Sub-Saha
 
 One of the problems of building and maintaining a usable poverty database are financial, it would cost around 30 million/year to continuously perform surveys in 77 lower income countries. But these costs are not the main problem. There is also an enormous lack of political will within the government to proper store poverty data. Political will covers a multitude of obstacles from a refusal to collect data to unwillingness to release data for analysis. Also, many surveys on poverty known to World Bank staff are not available to other analysts or even to the citizens of the country [3].
 
-### 1.3 Goal of this report
+## Goal of this report
 
 The success of the Sustainable Development Goals will be judged on what the data is telling us about their current state. For SDG 1, this will be mainly done in achieving the headline indicator of extreme poverty reduction, which is the share the population in a country living under the extreme poverty line of 1.90 a day. Without better poverty data, collected more frequently, and open to all, we will never know if that goal can be achieved. This can be done by collecting data, but it would take a lot of time to gather all this data and process it. Therefore, the main goal of this report is constructing a predictive model on basis of indicators that are related to poverty. We also try to get it an insight in the current state of poverty around the world to determine if our model predictions are accurate enough. 
 
-### 1.4 Research questions
+## Research questions
 
 Our main research question is twofold. The main part is about constructing a model that predicts poverty for various countries around the world. Besides that, we try to explore the current state of poverty and the distribution of wealth around the world. 
 
@@ -72,7 +73,7 @@ Our main research question is twofold. The main part is about constructing a mod
 •	Question 4: What are the parameters of our MCMC model to estimate the prevalence of poverty for countries with missing data?
 •	Question 5: What is the accuracy of our predictive model?
 
-### 1.5 Methodology 
+## Methodology 
 
 Within this report, we try to gain more insight behind the data of poverty around the world. First, we will clean and analyse the data by selecting the relevant indicators. By means of critical analysis and interpretation of figures and numbers, we try to find relations in the data to obtain useful indicators for our model. Also, relevant primary research on the topic of poverty will be included to compare our primary research findings.
 
@@ -89,11 +90,9 @@ Resources
 [7] 7https://qz.com/africa/1428639/world-banks-measure-of-poverty-is-flawed/
 http://www.un.org/en/sections/issues-depth/big-data-sustainable-development/index.html
 	
-#### Chapter 2
+# Data Understanding and Preperation
 
-- Data understanding  introduce used databases + data descriptives
-
-1.Initial data collection
+## Initial data collection
 
 Our data comes from World Development Indicators database(http://data.worldbank.org/data-catalog/world-development-indicators). On the website we could download the data, WDIData.csv. We focus on one of the UN Sustainable Development Goals: No Poverty. Data of over 1440 indicators of more than 200 countries and regions from 1960 to 2015 are provided in the WDI dataset, but only some of them are relevant to what we want to discuss about.  
 
@@ -125,14 +124,13 @@ Thirdly, we mostly use the data from 1990 to 2015. The number of people living i
 
 Last, we want to predict the missing data on poverty with our regression model using predictors of life expectancy, education, and mortality of infants, and with the data we will get a fuller picture of how the poverty will be reduced in the future.
 
-2.Data Description and quality problem
+## Data Description and quality problem
 
 We assume that indicators about social safety program, education, life expectation, mortality rate of infants are related to the poverty situation in countries. And we also make the hypothesis that social safety program, education and life expectation have negative correlation with poverty, while mortality rate of infants is positively related to poverty. These indicators include scales of both social science and economy so that we could look into the properties of poverty with a broader scope. 
 But in the indicators we choose, a lot of data is missing. We have two solutions on the missing data. The first solution is to drop off the data with missing part. The other way is to estimate the missing data with our regression model.
 
 
-- Data preparation  how did we modify the data to properly use it 
-1.Loading, choosing and merging the data
+## Loading, choosing and merging the data
 After we load the data and using the file encoding type as UTF-8, we make several changes to make the dataset neater. We drop off all the final blank columns which contain no data at all. 
 
 ```{r}
@@ -209,7 +207,7 @@ indicator_data_1990_2015 = indicator_data[,c(2:3,4:4,35:60)]
 
 ```
 
-2.Reshaping
+## Reshaping
 But for purpose of easier use, we reshape the data into the format that in each row, there’s one value of an indicator in one country of one year, with the columns of country code, region, country name, indicator code, indicator name, year, and the value. This is also known as a wide to long format transformation. We delete the “X” in the name of years, for the potential usage of the scale of time in the temporal distribution in the following part in the report.
 
 ```{r}
@@ -245,7 +243,7 @@ regions_used = subset(all_regions, all_regions$'Region/Country Name' %in% region
 regions_used = regions_used[,-c(2)]
 ```
 
-3.Data preparation for further graphs drawing 
+## Data preparation for further graphs drawing 
 
 In this part we want to prepare the data for the bubble charts about poverty and life expectancy, which indicates the correlation between these two indicators. We calculate the Total population of people who live in poverty by multiple two indicators: all population in the country and the poverty headcount ratio at $1.90 a day. 
 
@@ -311,13 +309,13 @@ df_bubble_2013_na$LifeExpec = round(df_bubble_2013_na$LifeExpec,2)
 df_bubble=merge(df_bubble_2013_na,df_bubble_2013_na_se,id= "Country.Code", all.x = T)
 ```
 
-## 3 Data exploration
+# Data exploration
 Within chapter 3, we try to answer our research question by means of several sub questions, see section 1.2. This is mainly done by analysing large datasets and trying to visualise this data by means of appropriate graphs. We try to gain more insight in the state of of poverty around the world.
 
 Firstly, the current state of hunger in the world shall be analysed by looking at the prevalence of poverty around the world, see section 3.1. Here we will discuss the problem of missing data in terms of estimating the poverty headcount within countries over longer time period. To answer the second research question, we will look at the distribution of wealth by analysing GINI indexes and Lorenz curves, see section 3.2. For the third research question, we plot several bubble charts and consider correlation between variables in our data, see section 3.3.
 
 
-### 3.1 The state of poverty in the world
+## The state of poverty in the world
 In this part we choose the indicators of Poverty headcount ratio at $1.90 a day and the total population in the country. We make subset of those indicators and again omit any NA values. Then we calculate the polulation living under absolute poverty and show it by line graphs.
 
 ```{r}
@@ -371,7 +369,7 @@ plot_ly(wide, x = ~Year, y = ~absolute, text = ~hover ,type = 'scatter', mode = 
 ```
 
 
-#### Distribution over regions
+### Distribution over regions
 Here we want to show the poverty gap in different regions. After deleting the rows with only NA value but not any data, we melt it to change the dataset from wide format to long format. Then we draw a stacked line chart based on the subset of data.
 
 ```{r}
@@ -408,7 +406,7 @@ gg
 
 ```
 
-#### Distribution all over the world
+### Distribution all over the world
 In the worldmap we only use the data of populations people in poverty from 2010 to 2015. To deal with the missing data, we choose to use the mean value of 6 years and use it as representative value. By doing that we have more data of population relating to poverty, while keeping the dtaa relatively acurate because we have a pool of data of the past 6 years.
 
 ``` {r}
@@ -471,7 +469,7 @@ k
 ```
 
 
-### Section 3.2 Distribution of wealth
+### Distribution of wealth
 The Multidimensional Poverty Index (MPI) published by the Oxford Poverty & Human Development Initiative (OPHI). The MPI is not aggregated at the country level, but at the individual level—it measures how one individual is deprived in different 'poverty' dimensions.
 
 The MPI is constructed from ten indicators across three core dimensions: health, education and living standards. In the following map below, we plotted the share of MPI poor people country by country. The multidimensional poverty index not only uses regular economic indicators such as income, consumption and GINI data, but also non-economic indicators such as nutrition, electricity and schooling. 
@@ -529,7 +527,7 @@ k
 ```
 
 
-#### Plotting the gini indices
+### Plotting the gini indices
 Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map. The Gini index is a measure for how wealth is distributed in a certain country. The higher the Gini index, the more inequal the wealth is distributed. The theoratical maximum value is nearly 100, where all the wealth is with less than one percent of the population. If the Gini index is 0, it represents complete equality in wealth distribution, so that everyone has the samen wealth. In general wealth is measured in income.
 
 ```{r}
@@ -564,7 +562,7 @@ pline <- plot_ly(idmc, x = ~idmc$variable, y = ~idmc$value, color = ~idmc$Countr
 pline
 ```
 
-#### Plotting the lorenz curve
+### Plotting the lorenz curve
 Below is the code for the lorenzcurve of the country with the lowest Gini Index. The lorenzcurve shows the distribution of wealth between the people in a country. Every Lorenzcurve has it own Gini index. The more away the lorenzcurve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed.We can see for example in Losotho that around 70% of the wealth is with only 40% of the people. We can conclude that in the countries with a high prevalence of poverty there is also a high Gini index. This means that for the poor people in those countries the conditions are even more extreme.
 
 ```{r}
@@ -591,10 +589,10 @@ gini_index_country = Gini(d20)
 ```
 
 
-### 3.3 Indicators for the model and their relation
+## Indicators for the model and their relation
 Poverty has a strong relation with various outcomes of the society of a country. Therefore we have explored the data to find variables that are correlated with the prevelance of poverty, and we have plotted them in bubble graphs. These variables shall also be used in our predictive model.
 
-#### Poverty and child mortality
+### Poverty and child mortality
 Below is the code for the bubble between poverty and spendings on education. In the graph we can see the relation between poverty and the child mortality under five years old within a country. The size of bubbles represent the percentage of people living in extreme poverty, to highlight that indicator. We can see that there is a positive relation between child moratility and poverty. This means that a country with a high percentage of people living in poverty also have a higher mortality rate of children under the age of five. 
 
 ```{r}
@@ -629,7 +627,7 @@ p <- plot_ly(df_bubble, x = ~ChildMort, y = ~Poverty, color = ~Region, size = ~s
 p
 ```
 
-#### Poverty correlates with health outcomes
+### Poverty correlates with health outcomes
 Moreover, people who live in extreme poverty also have particularly bad health outcomes. Countries with a low life expectancy (by birth), generally have a high prevelance of extreme poverty. As we can see, there is a clear negative relationship: people tend to live longer in countries where poverty is less common. The bubbles are relative for the extreme poverty headcount. Yet the correlation is far from perfect. Some countries such as Madagascar and Congo have a similar poverty headcount but a very different life expectancy. 
 The highest difference is between the countries Guinea and Iceland with a difference of (82,92 - 57,78 =) 25 years.
 
@@ -666,7 +664,7 @@ p
 
 ```
 
-## 4 Model draft
+# Model 
 
 ```{r}
 
@@ -817,7 +815,7 @@ Here:
   - Prediction of Rjags model
 
 
-## 5 evaluation
+# Evaluation
 - evaluation
 Insights gained from the figures and graphs  is useful because they play an important role in assissting policy makers and project implementers by revealing the poverty trend in the world, the potential causes of poverty, and thus helping evaluating the efforts put in targeting poverty alleviation.
 
@@ -828,7 +826,7 @@ The objectives of this report are: (1) to explore the spatial and temporal distr
 
 -	How could the model be improved  suggest next steps
 
-## 6 development
+# Development
 	- Can we predict future behaviour/Guide additional policy
 	- How would we communicate our findings to decision makers? 
 
