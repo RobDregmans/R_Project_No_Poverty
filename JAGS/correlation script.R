@@ -15,12 +15,5 @@ cor_table = round(cor_table,2)
 
 install.packages("PerformanceAnalytics")
 
-library("PerformanceAnalytics")
-
+PerformanceAnalytics
 chart.Correlation(df_correlation, histogram=TRUE, pch=19)
-
-
-#In the  plot, the distribution of each variable is shown on the diagonal.
-#On the bottom of the diagonal : the bivariate scatter plots with a fitted line are displayed
-#On the top of the diagonal : the value of the correlation plus the significance level as stars
-#Each significance level is associated to a symbol : p-values(0, 0.001, 0.01, 0.05, 0.1, 1) <=> symbols(“***”, “**”, “*”, “.”, " “)
