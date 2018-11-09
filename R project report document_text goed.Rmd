@@ -6,7 +6,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = "C:/Users/rob/Documents/GitHub/data")
-knitr::opts_chunk$set(comment=NA, fig.width=8, fig.height=8, fig.align = "center")
+knitr::opts_chunk$set(comment=NA, fig.align = "center")
 library(reshape)
 library(reshape2)
 library(dplyr)
@@ -522,8 +522,6 @@ k
 ```
 
 
-
-
 #### Plotting the gini indices
 Below is the code for plotting the gini indices for the eight countries with the lowest Gini index according to the data from the world map. The Gini index is a measure for how wealth is distributed in a certain country. The higher the Gini index, the more inequal the wealth is distributed. The theoratical maximum value is nearly 100, where all the wealth is with less than one percent of the population. If the Gini index is 0, it represents complete equality in wealth distribution, so that everyone has the samen wealth. In general wealth is measured in income.
 
@@ -560,7 +558,7 @@ pline
 ```
 
 #### Plotting the lorenz curve
-Below is the code for the lorenzcurve of the countrie with the lowest Gini Index. The lorenzcurve shows the distribution of wealth between the people in a country. Every Lorenzcurve has it own Gini index. The more away the lorenzcurve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed.We can see for example in Losotho that around 70& of the wealth is with only 40% of the people. We can conclude that in the countries with a high prevalence of poverty there is also a high Gini index. This means that for the poor people in those countries the conditions are even more extreme.
+Below is the code for the lorenzcurve of the country with the lowest Gini Index. The lorenzcurve shows the distribution of wealth between the people in a country. Every Lorenzcurve has it own Gini index. The more away the lorenzcurve is from the middle diagonal, the higher the Gini index and the more unfair the wealth is distributed.We can see for example in Losotho that around 70% of the wealth is with only 40% of the people. We can conclude that in the countries with a high prevalence of poverty there is also a high Gini index. This means that for the poor people in those countries the conditions are even more extreme.
 
 ```{r}
 # PLOT THE LORENZ CURVE OF ONE OF THE COUNTRIES (if a flat line occurs, there is no data)
@@ -586,7 +584,7 @@ gini_index_country = Gini(d20)
 ```
 
 
-### 3.3 
+### 3.3 Indicators for the model and their relation
 Poverty has a strong relation with various outcomes of the society of a country. Therefore we have explored the data to find variables that are correlated with the prevelance of poverty, and we have plotted them in bubble graphs. These variables shall also be used in our predictive model.
 
 #### Poverty and child mortality
@@ -625,7 +623,7 @@ p
 ```
 
 #### Poverty correlates with health outcomes
-People who live in extreme poverty have particularly bad health outcomes. Countries with a low life expectancy (by birth), generally have a high prevelance of extreme poverty. As we can see, there is a clear negative relationship: people tend to live longer in countries where poverty is less common. The bubbles are relative for the extreme poverty headcount. Yet the correlation is far from perfect. Some countries such as Madagascar and Congo have a similar poverty headcount but a very different life expectancy. 
+Moreover, people who live in extreme poverty also have particularly bad health outcomes. Countries with a low life expectancy (by birth), generally have a high prevelance of extreme poverty. As we can see, there is a clear negative relationship: people tend to live longer in countries where poverty is less common. The bubbles are relative for the extreme poverty headcount. Yet the correlation is far from perfect. Some countries such as Madagascar and Congo have a similar poverty headcount but a very different life expectancy. 
 The highest difference is between the countries Guinea and Iceland with a difference of (82,92 - 57,78 =) 25 years.
 
 ```{r}
@@ -660,7 +658,7 @@ p <- plot_ly(df_bubble, x = ~LifeExpec, y = ~Poverty, color = ~Region, size = ~s
 p
 
 ```
-c
+
 ## 4 Model draft
 Here: 
   - Correlation of predictors vs. output X and Y
